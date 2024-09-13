@@ -1,0 +1,13 @@
+.admin-panel-buttons {
+    display: flex;
+    flex-wrap: wrap; /* Permite que los botones se envuelvan en varias líneas */
+    gap: 20px; /* Espacio entre los botones */
+    justify-content: center; /* Centra los botones horizontalmente */
+    margin-top: 20px; /* Espacio arriba del contenedor de botones */
+  }
+  
+  .admin-panel-buttons > * {
+    flex: 1 1 200px; /* Los botones se adaptarán al ancho disponible */
+    max-width: 250px; /* Ancho máximo para cada botón */
+  }
+  

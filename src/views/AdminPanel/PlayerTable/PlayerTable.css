@@ -1,0 +1,108 @@
+.player-table-container {
+    padding: 20px;
+    font-family: Arial, sans-serif;
+  }
+  
+  .controls {
+    margin-bottom: 20px;
+  }
+  
+  .search-bar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .search-bar input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .search-icon {
+    margin-left: -30px;
+    font-size: 20px;
+    color: #888;
+  }
+  
+  .gender-buttons,
+  .points-buttons {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .filter-button {
+    background-color: #f4f4f4;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 16px;
+  }
+  
+  .filter-button.active {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .player-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .player-table th, .player-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+  }
+  
+  .player-photo {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+  }
+  
+  .editable-input {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 5px;
+    width: 100%;
+  }
+  
+  .action-button {
+    background-color: #f4f4f4;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  
+  .action-button.save {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .action-button.cancel {
+    background-color: #ffc107;
+    color: white;
+  }
+  
+  .action-button.edit {
+    background-color: #007bff;
+    color: white;
+  }
+  
+  .action-button.delete {
+    background-color: #dc3545;
+    color: white;
+  }
+  

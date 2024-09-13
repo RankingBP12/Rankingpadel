@@ -1,0 +1,30 @@
+/* src/views/AdminPanel/AgregarJugadorButton.css */
+
+.agregar-jugador-card {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 250px; /* Ancho del botón */
+    height: 180px; /* Alto del botón */
+    cursor: pointer;
+    transition: box-shadow 0.3s, background-color 0.3s;
+    margin: 20px;
+    text-align: center;
+    padding: 0; /* Eliminado el padding para ajustar al tamaño especificado */
+}
+
+.agregar-jugador-card:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.agregar-jugador-text {
+    font-size: 20px; /* Aumentado el tamaño de fuente para que se ajuste mejor */
+    color: #333;
+    font-weight: bold; /* Cambia el peso de la fuente a negrita */
+    margin: 0; /* Eliminar márgenes innecesarios */
+}

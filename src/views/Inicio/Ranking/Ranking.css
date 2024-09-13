@@ -1,0 +1,182 @@
+/* Contenedor principal para los rankings */
+.ranking-container {
+  display: flex;
+  flex-wrap: wrap; /* Permite que los rankings se envuelvan en pantallas pequeñas */
+  gap: 2rem; /* Espacio entre los rankings */
+  justify-content: center; /* Centra los rankings horizontalmente */
+}
+
+/* Estilos para el contenedor principal de cada ranking */
+.ranking-column {
+  width: 100%;
+  max-width: 40rem; /* Ancho máximo para cada ranking */
+  height: 43rem;
+  background-color: #ffffff;
+  -webkit-box-shadow: 0px 5px 15px 8px #e4e7fb;
+  box-shadow: 0px 5px 15px 8px #e4e7fb;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-radius: 0.5rem;
+  position: relative; /* Asegura que la cinta se posicione correctamente */
+}
+
+/* Encabezado de cada ranking */
+#header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Centra el contenido dentro del header */
+  padding: 2.5rem 2rem;
+}
+
+h1 {
+  font-family: "Rubik", sans-serif;
+  font-size: 1.7rem;
+  color: #141a39;
+  text-transform: uppercase;
+  cursor: default;
+  text-align: center; /* Centra el texto dentro del header */
+}
+
+/* Estilos para el leaderboard dentro del ranking */
+#leaderboard {
+  width: 100%;
+  position: relative;
+}
+
+/* Estilos para la tabla dentro del ranking */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  color: #141a39;
+  cursor: default;
+}
+
+tr {
+  transition: all 0.2s ease-in-out;
+  border-radius: 0.2rem;
+}
+
+tr:not(:first-child):hover {
+  background-color: #fff;
+  transform: scale(1.1);
+  -webkit-box-shadow: 0px 5px 15px 8px #e4e7fb;
+  box-shadow: 0px 5px 15px 8px #e4e7fb;
+}
+
+tr:nth-child(odd) {
+  background-color: #f9f9f9;
+}
+
+.highlight-row {
+  background-color: #fff; /* Color de fondo específico para la fila destacada */
+  color: #000; /* Color de texto específico para la fila destacada */
+}
+
+tr.highlight-row:nth-child(1) {
+  color: #fff; /* Color de texto específico para la primera fila destacada si es necesario */
+}
+
+
+td {
+  height: 5rem;
+  font-family: "Rubik", sans-serif;
+  font-size: 1.4rem;
+  padding: 1rem 2rem;
+  position: relative;
+}
+
+.number {
+  width: 1rem;
+  font-size: 2.2rem;
+  font-weight: bold;
+  text-align: left;
+}
+
+.name {
+  text-align: left;
+  font-size: 1.2rem;
+}
+
+.points {
+  font-weight: bold;
+  font-size: 1.3rem;
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.points:first-child {
+  width: 10rem;
+}
+
+.gold-medal {
+  height: 3rem;
+  margin-left: 1.5rem;
+}
+
+/* Estilo específico para la cinta en el ranking */
+.ribbon {
+  width: 100%;
+  height: 5.5rem;
+  top: -0.5rem;
+  background-color: #5c5be5;
+  position: absolute;
+  left: 0;
+  -webkit-box-shadow: 0px 15px 11px -6px #7a7a7d;
+  box-shadow: 0px 15px 11px -6px #7a7a7d;
+}
+
+.ribbon::before {
+  content: "";
+  height: 1.5rem;
+  width: 1.5rem;
+  bottom: -0.8rem;
+  left: 0.35rem;
+  transform: rotate(45deg);
+  background-color: #5c5be5;
+  position: absolute;
+  z-index: -1;
+}
+
+.ribbon::after {
+  content: "";
+  height: 1.5rem;
+  width: 1.5rem;
+  bottom: -0.8rem;
+  right: 0.35rem;
+  transform: rotate(45deg);
+  background-color: #5c5be5;
+  position: absolute;
+  z-index: -1;
+}
+
+/* Botón "Ver más" centrado */
+.ver-mas-btn {
+  margin-top: 10px;
+  padding: 10px 20px;
+  background-color: #5c5be5; /* Color azul */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  z-index: 10; /* Asegura que el botón esté encima de otros elementos */
+  position: relative;
+  display: block;
+  margin-left: auto;
+  margin-right: auto; /* Centra horizontalmente el botón */
+}
+
+.ver-mas-btn:hover {
+  background-color: #4b4ad5; /* Color azul más oscuro al pasar el ratón */
+}
+
+/* Para evitar solapamiento del botón */
+.ranking-column {
+  margin-bottom: 3rem; /* Deja un espacio en la parte inferior de cada ranking */
+}
+

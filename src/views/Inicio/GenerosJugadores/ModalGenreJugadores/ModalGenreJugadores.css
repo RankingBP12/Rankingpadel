@@ -1,0 +1,130 @@
+/* ModalGenreJugadores.css */
+.modal-gnr {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .modal-gnr-content {
+    position: relative;
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 1200px;
+    max-height: 90%;
+    overflow: auto;
+  }
+  
+  .modal-gnr-title {
+    margin-top: 0;
+    font-size: 24px;
+  }
+  
+  .modal-gnr-player-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px; /* Espacio entre las cards */
+  }
+  
+  .modal-gnr-player-card {
+    background: #f9f9f9;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
+    max-width: 300px; /* Tamaño máximo de la card */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .modal-gnr-player-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  .modal-gnr-player-photo {
+    width: 100%;
+    height: 200px; /* Altura fija para la imagen */
+    object-fit: cover;
+    transition: transform 0.3s ease;
+  }
+  
+  .modal-gnr-player-card:hover .modal-gnr-player-photo {
+    transform: scale(1.1); /* Aumenta el tamaño de la foto en hover */
+  }
+  
+  .modal-gnr-player-info {
+    padding: 15px;
+  }
+  
+  .modal-gnr-player-info h4 {
+    margin: 0;
+    font-size: 18px;
+  }
+  
+  .modal-gnr-player-info p {
+    margin: 5px 0 0;
+    color: #666;
+  }
+  
+  .modal-gnr-tabs-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    display: flex;
+    gap: 15px;
+  }
+  
+  .modal-gnr-tab {
+    background: #007bff;
+    color: #fff;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .modal-gnr-tab.active {
+    background: #0056b3;
+  }
+  
+  /* Media queries para pantallas más pequeñas */
+  @media (max-width: 768px) {
+    .modal-gnr-content {
+      width: 95%;
+    }
+  
+    .modal-gnr-title {
+      font-size: 20px;
+    }
+  
+    .modal-gnr-player-info h4 {
+      font-size: 16px;
+    }
+  
+    .modal-gnr-player-info p {
+      font-size: 14px;
+    }
+  
+    .modal-gnr-player-card {
+      max-width: 100%;
+    }
+  
+    .modal-gnr-tabs-container {
+      top: 5px;
+      right: 5px;
+      gap: 10px;
+    }
+  
+    .modal-gnr-tab {
+      padding: 6px 12px;
+      font-size: 14px;
+    }
+  }
+  

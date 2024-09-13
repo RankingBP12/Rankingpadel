@@ -1,0 +1,30 @@
+/* src/components/AgregarClubButton/AgregarClubButton.css */
+
+.agregar-club-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 250px; /* Ancho del botón */
+    height: 180px; /* Alto del botón */
+    cursor: pointer;
+    transition: box-shadow 0.3s, background-color 0.3s;
+    margin: 20px;
+    text-align: center;
+    padding: 0; /* Eliminado el padding para ajustar al tamaño especificado */
+    font-size: 20px; /* Tamaño de la fuente */
+    color: #333; /* Color del texto */
+    font-weight: bold; /* Fuente en negrita */
+}
+
+.agregar-club-button:hover {
+    background-color: #f0f0f0;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+
+.agregar-club-button:focus {
+    outline: none; /* Elimina el borde de enfoque */
+}

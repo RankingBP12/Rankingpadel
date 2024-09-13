@@ -1,0 +1,37 @@
+/* Contenedor principal para los rankings */
+.rankings-container {
+    display: flex;
+    flex-direction: column; /* Predeterminado: en columna para móviles */
+    gap: 2rem; /* Espacio entre los dos rankings */
+  }
+  
+  /* Estilos específicos para pantallas grandes (escritorio) */
+  @media (min-width: 768px) {
+    .rankings-container {
+      flex-direction: row; /* Cambia a fila en pantallas grandes */
+    }
+  }
+  
+  /* Estilo para cada ranking */
+  .ranking-container {
+    flex: 1; /* Hace que ambos componentes ocupen el mismo espacio disponible */
+  }
+  /* Tamaño de fuente para rankings en dispositivos móviles */
+@media (max-width: 740px) {
+    .ranking-container * {
+      font-size: 70%;
+    }
+  }
+  
+  @media (max-width: 500px) {
+    .ranking-container * {
+      font-size: 55%;
+    }
+  }
+  
+  @media (max-width: 390px) {
+    .ranking-container * {
+      font-size: 45%;
+    }
+  }
+  
