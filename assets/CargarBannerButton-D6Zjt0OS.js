@@ -1,0 +1,1 @@
+import{j as r}from"./index-BDcw6WbW.js";import{P as e}from"./index-B05dcSbW.js";const n=({onClick:a})=>r.jsx("div",{className:"carga-banner-card",onClick:a,children:r.jsx("h1",{className:"carga-banner-text",children:"Carga de banner"})});n.propTypes={onClick:e.func.isRequired};export{n as default};

@@ -1,0 +1,1 @@
+import{j as e}from"./index-BDcw6WbW.js";import{P as r}from"./index-B05dcSbW.js";const n=({onClick:o})=>e.jsx("div",{className:"agenda-torneo-card",onClick:o,children:e.jsx("h1",{className:"agenda-torneo-text",children:"Agendar Torneo"})});n.propTypes={onClick:r.func.isRequired};export{n as default};
