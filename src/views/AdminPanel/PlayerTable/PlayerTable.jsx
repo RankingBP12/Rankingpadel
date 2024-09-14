@@ -1,16 +1,25 @@
 import React, { useState, useEffect, useContext } from 'react';
-import classNames from 'classnames'; // Importa la biblioteca classnames
 import { FaSearch, FaMale, FaFemale, FaEdit, FaSave, FaTimes, FaTrash } from 'react-icons/fa';
-import { AppContext } from '../../../Context/AppContext'; // Asegúrate de la ruta correcta
+import classNames from 'classnames'; // Importa la biblioteca classnames
+import { AppContext } from '../../../Context/AppContext';
+import { database } from '../../../../firebase.config';
+import { ref, update, remove, get } from 'firebase/database'; // Importa get
 import './PlayerTable.css';
 
 const PlayerTable = () => {
-  const { jugadores, setJugadores } = useContext(AppContext);
-  const [filteredPlayers, setFilteredPlayers] = useState(jugadores);
+  const { updateJugadores, jugadores } = useContext(AppContext);
+  const [filteredPlayers, setFilteredPlayers] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedGender, setSelectedGender] = useState('');
   const [pointsFilter, setPointsFilter] = useState('');
   const [editPlayer, setEditPlayer] = useState(null);
+  const [isLoading, setIsLoading] = useState(false); // Nuevo estado para el loading
+  const [error, setError] = useState(''); // Nuevo estado para errores
+  const [playerToDeleteId, setPlayerToDeleteId] = useState(null); // ID del jugador a eliminar
+
+  useEffect(() => {
+    filterPlayers(selectedGender, searchTerm, pointsFilter);
+  }, [searchTerm, selectedGender, pointsFilter, jugadores]);
 
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
@@ -25,12 +34,14 @@ const PlayerTable = () => {
   };
 
   const filterPlayers = (gender, term, points) => {
-    let filtered = jugadores.filter(player => player.name.toLowerCase().includes(term.toLowerCase()));
+    const playersArray = Object.keys(jugadores).map(key => ({ id: jugadores[key].id, ...jugadores[key] }));
     
+    let filtered = playersArray.filter(player => player.name.toLowerCase().includes(term.toLowerCase()));
+  
     if (gender) {
       filtered = filtered.filter(player => player.gender === gender);
     }
-
+  
     if (points === 'greater') {
       filtered = filtered
         .filter(player => player.points > 0)
@@ -44,39 +55,88 @@ const PlayerTable = () => {
         .filter(player => player.points === 0)
         .sort((a, b) => a.name.localeCompare(b.name));
     }
-
+  
     setFilteredPlayers(filtered);
   };
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
-    setEditPlayer({ ...editPlayer, [name]: value });
+    if (editPlayer) {
+      setEditPlayer(prev => ({ ...prev, [name]: value }));
+    }
   };
 
   const handleEditClick = (player) => {
-    setEditPlayer(player);
+    setEditPlayer({ ...player });
   };
 
   const handleSaveClick = () => {
-    const updatedPlayers = jugadores.map(player => player.id === editPlayer.id ? editPlayer : player);
-    setJugadores(updatedPlayers);
-    setEditPlayer(null);
-    filterPlayers(selectedGender, searchTerm, pointsFilter);
+    if (editPlayer) {
+      const playerRef = ref(database, `jugadores/${editPlayer.id}`);
+      update(playerRef, { ...editPlayer })
+        .then(() => {
+          const updatedPlayers = { ...jugadores };
+          updatedPlayers[editPlayer.id] = { ...editPlayer };
+          updateJugadores(updatedPlayers);
+          setEditPlayer(null);
+          filterPlayers(selectedGender, searchTerm, pointsFilter);
+        })
+        .catch(error => {
+          console.error("Error updating player: ", error);
+          setError('Error al guardar los cambios.');
+        });
+    }
   };
 
   const handleDeleteClick = (id) => {
-    const updatedPlayers = jugadores.filter(player => player.id !== id);
-    setJugadores(updatedPlayers);
-    filterPlayers(selectedGender, searchTerm, pointsFilter);
-  };
+  setPlayerToDeleteId(id);
+  const confirmDelete = window.confirm(`¿Estás seguro de que deseas eliminar el jugador con ID ${id}?`);
+  if (confirmDelete) {
+    console.log("ID del jugador a eliminar:", id);
+    console.log("Datos en el contexto:", jugadores);
+
+    const playerRef = ref(database, `jugadores/${id}`);
+    setIsLoading(true);
+  
+    // Verifica si el jugador existe antes de eliminar
+    get(playerRef)
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          console.log("Jugador encontrado en Firebase:", snapshot.val());
+          return remove(playerRef);
+        } else {
+          throw new Error("El jugador no existe.");
+        }
+      })
+      .then(() => {
+        console.log("Jugador eliminado con éxito.");
+        const updatedPlayers = Object.keys(jugadores)
+          .filter(key => key !== id)
+          .reduce((res, key) => {
+            res[key] = jugadores[key];
+            return res;
+          }, {});
+  
+        updateJugadores(updatedPlayers);
+        localStorage.setItem('jugadores', JSON.stringify(updatedPlayers));
+        filterPlayers(selectedGender, searchTerm, pointsFilter);
+        setPlayerToDeleteId(null);
+      })
+      .catch((error) => {
+        console.error("Error deleting player:", error);
+        setError(`Error al eliminar el jugador: ${error.message}`);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }
+};
+
+  
 
   const handleCancelEdit = () => {
     setEditPlayer(null);
   };
-
-  useEffect(() => {
-    filterPlayers(selectedGender, searchTerm, pointsFilter);
-  }, [searchTerm, selectedGender, pointsFilter, jugadores]);
 
   return (
     <div className="player-table-container">
@@ -137,6 +197,8 @@ const PlayerTable = () => {
           </button>
         </div>
       </div>
+      {error && <div className="error-message">{error}</div>} {/* Muestra errores */}
+      {isLoading && <div className="loading-message">Eliminando jugador...</div>} {/* Muestra el estado de carga */}
       <table className="player-table">
         <thead>
           <tr className='juegadores'>
@@ -147,15 +209,17 @@ const PlayerTable = () => {
           </tr>
         </thead>
         <tbody>
-          {filteredPlayers.map(player => (
-            <tr key={player.id}>
-              <td><img src={player.photoURL} alt={player.name} className="player-photo" /></td>
+          {filteredPlayers.map((player, index) => (
+            <tr key={`${player.id}-${index}`}>
+              <td>
+                <img src={player.photoURL} alt={player.name} className="player-photo" />
+              </td>
               <td>
                 {editPlayer && editPlayer.id === player.id ? (
                   <input
                     type="text"
                     name="name"
-                    value={editPlayer.name}
+                    value={editPlayer.name || ''}
                     onChange={handleEditChange}
                     className="editable-input"
                   />
@@ -168,7 +232,7 @@ const PlayerTable = () => {
                   <input
                     type="number"
                     name="points"
-                    value={editPlayer.points}
+                    value={editPlayer.points || ''}
                     onChange={handleEditChange}
                     className="editable-input"
                   />

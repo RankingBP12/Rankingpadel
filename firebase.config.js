@@ -4,6 +4,7 @@ import { getAnalytics } from "firebase/analytics";
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getDatabase } from 'firebase/database';
 import { getStorage } from 'firebase/storage';
+import { enableLogging } from "firebase/database"; // Importa la función de logging
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -23,5 +24,8 @@ const analytics = getAnalytics(app);
 const provider = new GoogleAuthProvider();
 const database = getDatabase(app);
 const storage = getStorage(app);
+
+// Habilitar logging para la base de datos
+enableLogging(true);
 
 export { auth, analytics, provider, database, storage };

@@ -20,11 +20,11 @@ const ModalRanking = ({ isOpen, onClose, participants }) => {
             </tr>
           </thead>
           <tbody>
-            {participants.map((participant, index) => (
+            {participants.map((participant) => (
               <tr
                 key={participant.id} // Usar `id` si está disponible, de lo contrario usar `index`
                 style={
-                  index === 0
+                  participant.rank === 1
                     ? { backgroundColor: '#5c5be5', color: '#fff', fontWeight: 'bold' }
                     : {}
                 }
@@ -33,7 +33,7 @@ const ModalRanking = ({ isOpen, onClose, participants }) => {
                 <td>{participant.name}</td>
                 <td className="points-cell">
                   {participant.points}
-                  {index === 0 && (
+                  {participant.rank === 1 && (
                     <img
                       className="gold-medal"
                       src="https://github.com/malunaridev/Challenges-iCodeThis/blob/master/4-leaderboard/assets/gold-medal.png?raw=true"
@@ -50,7 +50,6 @@ const ModalRanking = ({ isOpen, onClose, participants }) => {
   );
 };
 
-// Definir PropTypes para validar las props
 ModalRanking.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   onClose: PropTypes.func.isRequired,

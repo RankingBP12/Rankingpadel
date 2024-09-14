@@ -1,45 +1,110 @@
-// src/views/AdminPanel/AgregarJugadorModal.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { ref as dbRef, push } from 'firebase/database';
-import { storage, database } from '../../../../firebase.config'; // Asegúrate de importar correctamente
+import { ref, set, get } from 'firebase/database';
+import { storage, database } from '../../../../firebase.config';
 import './AgregarJugadorModal.css';
 
-const AgregarJugadorModal = ({ onClose }) => {
-  const [name, setName] = useState('');
-  const [photo, setPhoto] = useState(null); // Estado para la foto
-  const [points, setPoints] = useState(''); // Puntos como string
-  const [gender, setGender] = useState(''); // Género
+const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, setJugadores }) => {
+  const [name, setName] = useState(editPlayer ? editPlayer.name : '');
+  const [photo, setPhoto] = useState(null);
+  const [points, setPoints] = useState(editPlayer ? editPlayer.points : '');
+  const [gender, setGender] = useState(editPlayer ? editPlayer.gender : '');
+  const [category, setCategory] = useState(editPlayer ? editPlayer.category : '');
+  const [nextId, setNextId] = useState(null);
+
+  useEffect(() => {
+    const fetchNextId = async () => {
+      try {
+        const jugadoresRef = ref(database, 'jugadores/');
+        const snapshot = await get(jugadoresRef);
+        const players = snapshot.val() || {};
+
+        // Obtener el ID numérico más alto
+        const ids = Object.keys(players).map(key => players[key].id);
+        const maxId = ids.length > 0 ? Math.max(...ids) : 0;
+        setNextId(maxId + 1);
+      } catch (error) {
+        console.error('Error al obtener el siguiente ID:', error);
+      }
+    };
+
+    fetchNextId();
+  }, []);
 
   const handleSave = async (e) => {
     e.preventDefault();
 
-    // Convertir puntos a número entero, asignar 0 si está vacío
     const puntos = points.trim() === '' ? 0 : parseInt(points, 10);
 
-    // Validar que nombre, foto y género no estén vacíos
-    if (!name || !photo || !gender) {
-      alert('Nombre, foto y género son obligatorios.');
+    if (!name || !photo || !gender || !category) {
+      alert('Nombre, foto, género y categoría son obligatorios.');
+      return;
+    }
+
+    if (isNaN(puntos) || puntos < 0) {
+      alert('Los puntos deben ser un número positivo.');
       return;
     }
 
     try {
-      // Subir la foto a Firebase Storage
       const photoRef = storageRef(storage, `jugadores/${photo.name}`);
       await uploadBytes(photoRef, photo);
       const photoURL = await getDownloadURL(photoRef);
 
-      // Guardar la información en Realtime Database usando `push` para agregar nuevos elementos
-      const jugadorRef = dbRef(database, 'jugadores/');
-      await push(jugadorRef, {
-        name,
-        points: puntos,
-        gender,
-        photoURL, // URL de la foto subida
-      });
+      if (editPlayer) {
+        // Actualizar jugador existente
+        const playerRef = ref(database, `jugadores/${editPlayer.id}`);
+        await set(playerRef, {
+          id: editPlayer.id,
+          name,
+          points: puntos,
+          gender,
+          category,
+          photoURL,
+        });
 
-      alert('Jugador guardado con éxito');
+        // Actualizar en el estado local
+        const updatedPlayers = { ...jugadores };
+        updatedPlayers[editPlayer.id] = {
+          id: editPlayer.id,
+          name,
+          points: puntos,
+          gender,
+          category,
+          photoURL,
+        };
+        setJugadores(updatedPlayers);
+
+        alert('Jugador actualizado con éxito');
+        setEditPlayer(null);
+      } else {
+        // Agregar nuevo jugador
+        const jugadorRef = ref(database, `jugadores/${nextId}`);
+        await set(jugadorRef, {
+          id: nextId,
+          name,
+          points: puntos,
+          gender,
+          category,
+          photoURL,
+        });
+
+        // Actualizar en el estado local
+        const updatedPlayers = { ...jugadores };
+        updatedPlayers[nextId] = {
+          id: nextId,
+          name,
+          points: puntos,
+          gender,
+          category,
+          photoURL,
+        };
+        setJugadores(updatedPlayers);
+
+        alert('Jugador guardado con éxito');
+      }
+
       onClose();
     } catch (error) {
       console.error('Error al guardar el jugador:', error);
@@ -54,14 +119,14 @@ const AgregarJugadorModal = ({ onClose }) => {
   };
 
   const handlePhotoChange = (e) => {
-    setPhoto(e.target.files[0]); // Obtener el archivo seleccionado
+    setPhoto(e.target.files[0]);
   };
 
   return (
     <div className="agregar-jugador-modal-overlay" onClick={handleOverlayClick}>
       <div className="agregar-jugador-modal-content">
         <button className="modal-close" onClick={onClose}>&times;</button>
-        <h2>Agregar Jugador</h2>
+        <h2>{editPlayer ? 'Editar Jugador' : 'Agregar Jugador'}</h2>
         <form className="agregar-jugador-form" onSubmit={handleSave}>
           <div className="form-group">
             <label htmlFor="name">Nombre del Jugador</label>
@@ -81,7 +146,7 @@ const AgregarJugadorModal = ({ onClose }) => {
               type="file"
               accept="image/*"
               onChange={handlePhotoChange}
-              required
+              required={!editPlayer}
             />
           </div>
           <div className="form-group">
@@ -108,6 +173,26 @@ const AgregarJugadorModal = ({ onClose }) => {
               <option value="femenino">Femenino</option>
             </select>
           </div>
+          <div className="form-group">
+            <label htmlFor="category">Categoría</label>
+            <select
+              id="category"
+              value={category}
+              onChange={(e) => setCategory(e.target.value)}
+              required
+            >
+              <option value="">Seleccione una categoría</option>
+              <option value="Primera">Primera</option>
+              <option value="Segunda">Segunda</option>
+              <option value="Tercera">Tercera</option>
+              <option value="Cuarta">Cuarta</option>
+              <option value="Quinta">Quinta</option>
+              <option value="Sexta">Sexta</option>
+              <option value="Septima">Séptima</option>
+              <option value="OctavaA">Octava A</option>
+              <option value="OctavaB">Octava B</option>
+            </select>
+          </div>
           <div className="form-actions">
             <button className="save-button" type="submit">Guardar</button>
             <button className="cancel-button" type="button" onClick={onClose}>Cancelar</button>
@@ -118,9 +203,12 @@ const AgregarJugadorModal = ({ onClose }) => {
   );
 };
 
-// Define los tipos de las props
 AgregarJugadorModal.propTypes = {
   onClose: PropTypes.func.isRequired,
+  editPlayer: PropTypes.object,
+  setEditPlayer: PropTypes.func,
+  jugadores: PropTypes.object,
+  setJugadores: PropTypes.func,
 };
 
 export default AgregarJugadorModal;

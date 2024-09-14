@@ -1,0 +1,113 @@
+.select-menu {
+    max-width: 330px;
+    width: 100%;
+    position: relative;
+}
+
+.select-menu .select-btn {
+    display: flex;
+    height: 55px;
+    background: #fff;
+    font-size: 18px;
+    font-weight: 400;
+    border-radius: 8px;
+    align-items: center;
+    justify-content: center; /* Centra el contenido dentro del botón */
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.2);
+    width: 100%;
+    padding: 0 16px; /* Espacio interno para que el contenido no quede pegado a los bordes */
+}
+
+.select-menu .options {
+    position: absolute;
+    width: 100%;
+    overflow-y: auto;
+    max-height: 295px;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    animation-name: fadeInDown;
+    animation-duration: 0.35s;
+    animation-fill-mode: both;
+}
+
+.select-menu .options .option {
+    display: flex;
+    height: 55px;
+    cursor: pointer;
+    padding: 0 16px;
+    border-radius: 8px;
+    align-items: center;
+    background: #fff;
+    justify-content: flex-start; /* Para que el ícono y el texto estén alineados al inicio */
+}
+
+.select-menu .options .option:hover {
+    background: #f2f2f2;
+}
+
+.select-menu .options .option .category-icon,
+.select-menu .select-btn .select-icon {
+    width: 30px;
+    height: 30px;
+    margin-right: 12px; /* Espacio entre el ícono y el texto */
+}
+
+.select-menu .options .option .option-text {
+    font-size: 18px;
+    color: #333;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.select-btn .sBtn-text {
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-align: center; /* Centrar el texto */
+}
+
+.select-btn .select-icon {
+    width: 30px;
+    height: 30px;
+    transition: 0.3s;
+}
+
+.select-menu.active .select-btn .select-icon {
+    transform: rotate(-180deg);
+}
+
+.select-menu.active .options {
+    display: block;
+    opacity: 1;
+    z-index: 10;
+    animation-name: fadeInUp;
+    animation-duration: 0.4s;
+    animation-fill-mode: both;
+}
+
+@keyframes fadeInUp {
+    from {
+        transform: translate3d(0, 30px, 0);
+        opacity: 0;
+    }
+    to {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        transform: translate3d(0, 0, 0);
+        opacity: 1;
+    }
+    to {
+        transform: translate3d(0, 20px, 0);
+        opacity: 0;
+    }
+}

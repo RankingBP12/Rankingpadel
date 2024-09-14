@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { ref, onValue, remove } from 'firebase/database';
+import { ref, onValue, remove, get } from 'firebase/database';
 import { database } from '../../firebase.config';
 
 const AppContext = createContext();
@@ -61,9 +61,9 @@ const AppProvider = ({ children }) => {
         return torneoDate >= currentDate;
       });
 
-      // Eliminar torneos pasados de la base de datos
+      // Obtener todos los torneos actuales
       const torneosRef = ref(database, 'torneos');
-      const torneosSnapshot = await onValue(torneosRef);
+      const torneosSnapshot = await get(torneosRef);
 
       torneosSnapshot.forEach((snapshot) => {
         const torneo = snapshot.val();
@@ -82,7 +82,7 @@ const AppProvider = ({ children }) => {
   }, [torneos]);
 
   return (
-    <AppContext.Provider value={{ banners, jugadores, torneos, clubes }}>
+    <AppContext.Provider value={{ banners, jugadores, setJugadores, torneos, clubes }}>
       {children}
     </AppContext.Provider>
   );
