@@ -1,1 +1,0 @@
-import{j as t}from"./index-BDcw6WbW.js";import{P as o}from"./index-B05dcSbW.js";const e=({onClick:r})=>t.jsx("button",{className:"agregar-club-button",onClick:r,children:"AGREGAR CLUB"});e.propTypes={onClick:o.func.isRequired};export{e as default};

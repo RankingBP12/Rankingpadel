@@ -1,1 +1,0 @@
-import{j as r}from"./index-BDcw6WbW.js";import{P as e}from"./index-B05dcSbW.js";const o=({onClick:a})=>r.jsx("div",{className:"agregar-jugador-card",onClick:a,children:r.jsx("h1",{className:"agregar-jugador-text",children:"Agregar Jugador"})});o.propTypes={onClick:e.func.isRequired};export{o as default};
