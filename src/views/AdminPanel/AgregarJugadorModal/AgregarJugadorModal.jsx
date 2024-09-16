@@ -12,6 +12,7 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
   const [gender, setGender] = useState(editPlayer ? editPlayer.gender : '');
   const [category, setCategory] = useState(editPlayer ? editPlayer.category : '');
   const [nextId, setNextId] = useState(null);
+  const [avatarURL, setAvatarURL] = useState('');
 
   useEffect(() => {
     const fetchNextId = async () => {
@@ -20,7 +21,6 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
         const snapshot = await get(jugadoresRef);
         const players = snapshot.val() || {};
 
-        // Obtener el ID numérico más alto
         const ids = Object.keys(players).map(key => players[key].id);
         const maxId = ids.length > 0 ? Math.max(...ids) : 0;
         setNextId(maxId + 1);
@@ -32,13 +32,24 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
     fetchNextId();
   }, []);
 
+  useEffect(() => {
+    // Generar avatar cuando no se selecciona una foto
+    if (!photo && name) {
+      const initials = name.split(' ').map(word => word[0]).join('');
+      // Reemplaza `styleName` con el estilo que prefieras, por ejemplo: `adventurer`
+      const avatarStyle = 'adventurer'; 
+      const avatarUrl = `https://api.dicebear.com/9.x/${avatarStyle}/svg?seed=${initials}`;
+      setAvatarURL(avatarUrl);
+    }
+  }, [name, photo]);
+
   const handleSave = async (e) => {
     e.preventDefault();
 
     const puntos = points.trim() === '' ? 0 : parseInt(points, 10);
 
-    if (!name || !photo || !gender || !category) {
-      alert('Nombre, foto, género y categoría son obligatorios.');
+    if (!name || !gender || !category) {
+      alert('Nombre, género y categoría son obligatorios.');
       return;
     }
 
@@ -48,12 +59,15 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
     }
 
     try {
-      const photoRef = storageRef(storage, `jugadores/${photo.name}`);
-      await uploadBytes(photoRef, photo);
-      const photoURL = await getDownloadURL(photoRef);
+      let photoURL = avatarURL; // Usa el avatar si no hay foto
+
+      if (photo) {
+        const photoRef = storageRef(storage, `jugadores/${photo.name}`);
+        await uploadBytes(photoRef, photo);
+        photoURL = await getDownloadURL(photoRef);
+      }
 
       if (editPlayer) {
-        // Actualizar jugador existente
         const playerRef = ref(database, `jugadores/${editPlayer.id}`);
         await set(playerRef, {
           id: editPlayer.id,
@@ -64,7 +78,6 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
           photoURL,
         });
 
-        // Actualizar en el estado local
         const updatedPlayers = { ...jugadores };
         updatedPlayers[editPlayer.id] = {
           id: editPlayer.id,
@@ -79,7 +92,6 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
         alert('Jugador actualizado con éxito');
         setEditPlayer(null);
       } else {
-        // Agregar nuevo jugador
         const jugadorRef = ref(database, `jugadores/${nextId}`);
         await set(jugadorRef, {
           id: nextId,
@@ -90,7 +102,6 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
           photoURL,
         });
 
-        // Actualizar en el estado local
         const updatedPlayers = { ...jugadores };
         updatedPlayers[nextId] = {
           id: nextId,
@@ -140,13 +151,12 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
             />
           </div>
           <div className="form-group">
-            <label htmlFor="photo">Foto del Jugador</label>
+            <label htmlFor="photo">Foto del Jugador (opcional)</label>
             <input
               id="photo"
               type="file"
               accept="image/*"
               onChange={handlePhotoChange}
-              required={!editPlayer}
             />
           </div>
           <div className="form-group">
@@ -198,6 +208,10 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
             <button className="cancel-button" type="button" onClick={onClose}>Cancelar</button>
           </div>
         </form>
+        {/* Mostrar el avatar o la foto cargada */}
+        <div className="avatar-container">
+          <img src={photo ? URL.createObjectURL(photo) : avatarURL} alt="Avatar" className="avatar-image" />
+        </div>
       </div>
     </div>
   );

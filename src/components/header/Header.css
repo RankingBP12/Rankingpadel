@@ -1,54 +1,82 @@
-/* Header.css */
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: white;
-    color: white;
-    position: fixed;
-    width: 97%;
-    top: 0;
-    left: 0;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-    z-index: 1;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #f5f5f5; /* Fondo blanco o gris claro */
+  color: grey;
+  position: fixed;
+  width: 98%;
+  top: 0;
+  left: 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  z-index: 1000;
+}
+
+.logo {
+  display: flex; /* Añadido para alinear el texto con el logo */
+  align-items: center; /* Centra verticalmente el texto y el logo */
+  font-weight: bold;
+  font-size: 24px;
+  color: grey;
+}
+
+.logo-img {
+  height: 70px; /* Ajuste para la imagen del logo */
+}
+
+.neon-text { /* Estilo de texto en neón */
+  color: #fff;
+  text-shadow:
+      0 0 7px #0818ef,
+      0 0 10px #1866db,
+      0 0 21px #ffffff,
+      0 0 42px rgb(0, 64, 255),
+      0 0 82px rgb(0, 72, 255),
+      0 0 92px rgb(0, 0, 255),
+      0 0 102px rgb(0, 34, 255),
+      0 0 151px rgb(4, 0, 255);
+  font-size: 24px; /* Ajusta el tamaño según tus necesidades */
+  margin-left: 10px; /* Espacio entre el logo y el texto */
+}
+
+.nav {
+  display: flex;
+  gap: 20px; /* Separación mayor entre los enlaces */
+}
+
+.nav-link {
+  color: grey;
+  text-decoration: none;
+  font-size: 18px;
+  padding: 8px 12px;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.nav-link:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Fondo gris al hacer hover */
+  text-decoration: underline;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 10px;
   }
-  
+
   .logo {
-    font-weight: bold;
-    font-size: 24px;
-    color: grey;
+    margin-bottom: 10px; /* Espacio adicional debajo del logo y texto en dispositivos pequeños */
   }
-  
+
   .nav {
-    display: flex;
+    margin-top: 10px;
     gap: 15px;
   }
-  
+
   .nav-link {
-    color: grey;
-    text-decoration: none;
-    font-size: 18px;
+    font-size: 16px;
   }
-  
-  .nav-link:hover {
-    text-decoration: underline;
-  }
-  
-  /* Responsive Styles */
-  @media (max-width: 768px) {
-    .header {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  
-    .nav {
-      margin-top: 10px;
-      gap: 10px;
-    }
-  
-    .nav-link {
-      font-size: 16px;
-    }
-  }
-  
+}

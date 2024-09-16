@@ -1,23 +1,24 @@
-import { useEffect, useState } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../../../firebase.config';
-import CargaBannerButton from './CargarBanner/CargarBannerButton';
-import AgendaTorneoButton from './AgendaTorneo/AgendaTorneoButton';
-import AgregarJugadorButton from './AgregarJugadorButton/AgregarJugadorButton';
-import AgregarClubButton from './AgregarClubButton/AgregarClubButton'; // Importa el nuevo botón
-import BannerModal from './BannerModal/BannerModal';
-import AgendaTorneoModal from './AgendaTorneoModal/AgendaTorneoModal';
-import AgregarJugadorModal from './AgregarJugadorModal/AgregarJugadorModal';
-import AgregarClubModal from './AgregarClubModal/AgregarClubModal'; // Importa el nuevo modal
 import './AdminPanel.css';
-import PlayerTable from './PlayerTable/PlayerTable';
+
+const CargaBannerButton = lazy(() => import('./CargarBanner/CargarBannerButton'));
+const AgendaTorneoButton = lazy(() => import('./AgendaTorneo/AgendaTorneoButton'));
+const AgregarJugadorButton = lazy(() => import('./AgregarJugadorButton/AgregarJugadorButton'));
+const AgregarClubButton = lazy(() => import('./AgregarClubButton/AgregarClubButton'));
+const BannerModal = lazy(() => import('./BannerModal/BannerModal'));
+const AgendaTorneoModal = lazy(() => import('./AgendaTorneoModal/AgendaTorneoModal'));
+const AgregarJugadorModal = lazy(() => import('./AgregarJugadorModal/AgregarJugadorModal'));
+const AgregarClubModal = lazy(() => import('./AgregarClubModal/AgregarClubModal'));
+const PlayerTable = lazy(() => import('./PlayerTable/PlayerTable'));
 
 const AdminPanel = () => {
   const navigate = useNavigate();
   const [showBannerModal, setShowBannerModal] = useState(false);
   const [showTorneoModal, setShowTorneoModal] = useState(false);
   const [showJugadorModal, setShowJugadorModal] = useState(false);
-  const [showClubModal, setShowClubModal] = useState(false); // Estado para el nuevo modal
+  const [showClubModal, setShowClubModal] = useState(false);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
@@ -38,23 +39,41 @@ const AdminPanel = () => {
   const handleOpenJugadorModal = () => setShowJugadorModal(true);
   const handleCloseJugadorModal = () => setShowJugadorModal(false);
 
-  const handleOpenClubModal = () => setShowClubModal(true); // Abre el modal de club
-  const handleCloseClubModal = () => setShowClubModal(false); // Cierra el modal de club
+  const handleOpenClubModal = () => setShowClubModal(true);
+  const handleCloseClubModal = () => setShowClubModal(false);
 
   return (
     <div>
       <h1>Admin Panel</h1>
       <div className="admin-panel-buttons">
-        <CargaBannerButton onClick={handleOpenBannerModal} />
-        <AgendaTorneoButton onClick={handleOpenTorneoModal} />
-        <AgregarJugadorButton onClick={handleOpenJugadorModal} />
-        <AgregarClubButton onClick={handleOpenClubModal} /> {/* Nuevo botón */}
+        <Suspense fallback={<div>Loading CargaBannerButton...</div>}>
+          <CargaBannerButton onClick={handleOpenBannerModal} />
+        </Suspense>
+        <Suspense fallback={<div>Loading AgendaTorneoButton...</div>}>
+          <AgendaTorneoButton onClick={handleOpenTorneoModal} />
+        </Suspense>
+        <Suspense fallback={<div>Loading AgregarJugadorButton...</div>}>
+          <AgregarJugadorButton onClick={handleOpenJugadorModal} />
+        </Suspense>
+        <Suspense fallback={<div>Loading AgregarClubButton...</div>}>
+          <AgregarClubButton onClick={handleOpenClubModal} />
+        </Suspense>
       </div>
-      {showBannerModal && <BannerModal onClose={handleCloseBannerModal} />}
-      {showTorneoModal && <AgendaTorneoModal onClose={handleCloseTorneoModal} />}
-      {showJugadorModal && <AgregarJugadorModal onClose={handleCloseJugadorModal} />}
-      {showClubModal && <AgregarClubModal onClose={handleCloseClubModal} />} {/* Nuevo modal */}
-      <PlayerTable />
+      <Suspense fallback={<div>Loading BannerModal...</div>}>
+        {showBannerModal && <BannerModal onClose={handleCloseBannerModal} />}
+      </Suspense>
+      <Suspense fallback={<div>Loading AgendaTorneoModal...</div>}>
+        {showTorneoModal && <AgendaTorneoModal onClose={handleCloseTorneoModal} />}
+      </Suspense>
+      <Suspense fallback={<div>Loading AgregarJugadorModal...</div>}>
+        {showJugadorModal && <AgregarJugadorModal onClose={handleCloseJugadorModal} />}
+      </Suspense>
+      <Suspense fallback={<div>Loading AgregarClubModal...</div>}>
+        {showClubModal && <AgregarClubModal onClose={handleCloseClubModal} />}
+      </Suspense>
+      <Suspense fallback={<div>Loading PlayerTable...</div>}>
+        <PlayerTable />
+      </Suspense>
     </div>
   );
 };

@@ -1,9 +1,9 @@
-// src/views/AdminPanel/BannerModal.jsx
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { ref as dbRef, push } from 'firebase/database';
 import { storage, database } from '../../../../firebase.config'; // Asegúrate de importar correctamente
+import imageCompression from 'browser-image-compression'; // Importa la librería de compresión
 import './BannerModal.css';
 
 const BannerModal = ({ onClose }) => {
@@ -11,9 +11,24 @@ const BannerModal = ({ onClose }) => {
   const [photo, setPhoto] = useState(null);
   const [link, setLink] = useState('');
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     if (e.target.files.length > 0) {
-      setPhoto(e.target.files[0]);
+      const file = e.target.files[0];
+      
+      // Configuración de compresión
+      const options = {
+        maxSizeMB: 1, // Tamaño máximo en MB
+        maxWidthOrHeight: 1920, // Tamaño máximo en ancho o alto en píxeles
+        useWebWorker: true, // Usa un web worker para la compresión
+      };
+
+      try {
+        const compressedFile = await imageCompression(file, options);
+        setPhoto(compressedFile);
+      } catch (error) {
+        console.error('Error al comprimir la imagen:', error);
+        alert('Hubo un error al comprimir la imagen.');
+      }
     }
   };
 

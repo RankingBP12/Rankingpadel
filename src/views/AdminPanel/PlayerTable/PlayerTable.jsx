@@ -34,30 +34,38 @@ const PlayerTable = () => {
   };
 
   const filterPlayers = (gender, term, points) => {
-    const playersArray = Object.keys(jugadores).map(key => ({ id: jugadores[key].id, ...jugadores[key] }));
-    
-    let filtered = playersArray.filter(player => player.name.toLowerCase().includes(term.toLowerCase()));
+    try {
+      const playersArray = Object.keys(jugadores).map(key => ({ id: jugadores[key].id, ...jugadores[key] }));
+      
+      let filtered = playersArray.filter(player => player.name.toLowerCase().includes(term.toLowerCase()));
   
-    if (gender) {
-      filtered = filtered.filter(player => player.gender === gender);
+      // Asegurarse de que gender no sea null o undefined antes de filtrar
+      if (gender) {
+        filtered = filtered.filter(player => player.gender === gender);
+      }
+  
+      if (points === 'greater') {
+        filtered = filtered
+          .filter(player => player.points > 0)
+          .sort((a, b) => b.points - a.points);
+      } else if (points === 'less') {
+        filtered = filtered
+          .filter(player => player.points > 0)
+          .sort((a, b) => a.points - b.points);
+      } else if (points === 'zero') {
+        filtered = filtered
+          .filter(player => player.points === 0)
+          .sort((a, b) => a.name.localeCompare(b.name));
+      }
+  
+      setFilteredPlayers(filtered);
+    } catch (error) {
+      console.error("Error filtering players:", error);
+      // Puedes manejar el error de alguna forma, como mostrando un mensaje o continuando con el proceso
+      setFilteredPlayers([]); // Vacía la lista de jugadores si ocurre un error
     }
-  
-    if (points === 'greater') {
-      filtered = filtered
-        .filter(player => player.points > 0)
-        .sort((a, b) => b.points - a.points);
-    } else if (points === 'less') {
-      filtered = filtered
-        .filter(player => player.points > 0)
-        .sort((a, b) => a.points - b.points);
-    } else if (points === 'zero') {
-      filtered = filtered
-        .filter(player => player.points === 0)
-        .sort((a, b) => a.name.localeCompare(b.name));
-    }
-  
-    setFilteredPlayers(filtered);
   };
+  
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;

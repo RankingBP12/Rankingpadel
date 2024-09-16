@@ -1,4 +1,3 @@
-// src/components/AppRouter.jsx
 import { HashRouter as Router, Route, Routes } from 'react-router-dom';
 import Inicio from '../views/Inicio/Inicio';
 import AdminLogin from '../views/AdminLogin/AdminLogin';

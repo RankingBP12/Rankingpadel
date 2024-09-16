@@ -4,7 +4,6 @@ import './BannerP.css';
 
 const BannerP = () => {
   const { banners } = useContext(AppContext);
-
   const [slideIndex, setSlideIndex] = useState(0);
   const [autoplay, setAutoplay] = useState(true);
   const slidesRef = useRef(null);
