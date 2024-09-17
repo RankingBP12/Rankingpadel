@@ -1,10 +1,10 @@
 import React, { createContext, useState, useEffect } from 'react';
-import { ref, onValue, remove, get } from 'firebase/database';
+import { ref, get, remove } from 'firebase/database';
 import { database } from '../../firebase.config';
 
 const AppContext = createContext();
 
-const AppProvider = ({ children }) => {
+const AppProvider = React.memo(({ children }) => {
   const [banners, setBanners] = useState([]);
   const [jugadores, setJugadores] = useState([]);
   const [torneos, setTorneos] = useState([]);
@@ -17,51 +17,50 @@ const AppProvider = ({ children }) => {
       const torneosRef = ref(database, 'torneos');
       const clubesRef = ref(database, 'clubs');
 
-      const handleData = (key, ref, setState) => {
-        onValue(ref, (snapshot) => {
-          const data = snapshot.val();
-          const dataArray = data ? (Array.isArray(data) ? data : Object.values(data)) : [];
-          
-          // Store data in localStorage
-          localStorage.setItem(key, JSON.stringify(dataArray));
+      const handleData = async (key, ref, setState) => {
+        const snapshot = await get(ref);
+        const data = snapshot.val();
+        const dataArray = data ? (Array.isArray(data) ? data : Object.values(data)) : [];
 
-          // Update state
-          setState(dataArray);
-        });
+        // Guardar en localStorage solo si se obtiene data válida
+        if (dataArray.length > 0) {
+          localStorage.setItem(key, JSON.stringify(dataArray));
+        }
+
+        // Actualizar estado
+        setState(dataArray);
       };
 
-      handleData('banners', bannersRef, setBanners);
-      handleData('jugadores', jugadoresRef, setJugadores);
-      handleData('torneos', torneosRef, setTorneos);
-      handleData('clubs', clubesRef, setClubes);
+      // Hacer una única solicitud a Firebase cuando se monta el componente
+      await handleData('banners', bannersRef, setBanners);
+      await handleData('jugadores', jugadoresRef, setJugadores);
+      await handleData('torneos', torneosRef, setTorneos);
+      await handleData('clubs', clubesRef, setClubes);
     };
 
-    fetchData();
-  }, []);
-
-  useEffect(() => {
+    // Cargar datos desde localStorage mientras se obtienen los datos de Firebase
     const bannersData = JSON.parse(localStorage.getItem('banners')) || [];
     const jugadoresData = JSON.parse(localStorage.getItem('jugadores')) || [];
     const torneosData = JSON.parse(localStorage.getItem('torneos')) || [];
     const clubesData = JSON.parse(localStorage.getItem('clubs')) || [];
 
-    setBanners(bannersData);
-    setJugadores(jugadoresData);
-    setTorneos(torneosData);
-    setClubes(clubesData);
+    if (bannersData.length) setBanners(bannersData);
+    if (jugadoresData.length) setJugadores(jugadoresData);
+    if (torneosData.length) setTorneos(torneosData);
+    if (clubesData.length) setClubes(clubesData);
+
+    fetchData();
   }, []);
 
   useEffect(() => {
     const removePastTorneos = async () => {
-      const currentDate = new Date().toISOString().split('T')[0]; // Obtener solo la parte de la fecha
+      const currentDate = new Date().toISOString().split('T')[0];
 
-      // Filtrar torneos para obtener solo los futuros
       const futureTorneos = torneos.filter(torneo => {
-        const torneoDate = torneo.fecha.split('/').reverse().join('-'); // Convertir dd/mm/yyyy a yyyy-mm-dd
+        const torneoDate = torneo.fecha.split('/').reverse().join('-');
         return torneoDate >= currentDate;
       });
 
-      // Obtener todos los torneos actuales
       const torneosRef = ref(database, 'torneos');
       const torneosSnapshot = await get(torneosRef);
 
@@ -74,11 +73,12 @@ const AppProvider = ({ children }) => {
         }
       });
 
-      // Actualizar estado con torneos futuros
       setTorneos(futureTorneos);
     };
 
-    removePastTorneos();
+    if (torneos.length) {
+      removePastTorneos();
+    }
   }, [torneos]);
 
   return (
@@ -86,6 +86,6 @@ const AppProvider = ({ children }) => {
       {children}
     </AppContext.Provider>
   );
-};
+});
 
 export { AppProvider, AppContext };

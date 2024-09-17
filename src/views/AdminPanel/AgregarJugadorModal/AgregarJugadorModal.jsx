@@ -37,7 +37,7 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
     if (!photo && name) {
       const initials = name.split(' ').map(word => word[0]).join('');
       // Reemplaza `styleName` con el estilo que prefieras, por ejemplo: `adventurer`
-      const avatarStyle = 'adventurer'; 
+      const avatarStyle = 'pixel-art-neutral'; 
       const avatarUrl = `https://api.dicebear.com/9.x/${avatarStyle}/svg?seed=${initials}`;
       setAvatarURL(avatarUrl);
     }
