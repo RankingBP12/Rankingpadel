@@ -1,7 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { ref as dbRef, push } from 'firebase/database';
+import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { ref as dbRef, push, get, remove } from 'firebase/database';
 import { storage, database } from '../../../../firebase.config'; // Asegúrate de importar correctamente
 import imageCompression from 'browser-image-compression'; // Importa la librería de compresión
 import './BannerModal.css';
@@ -10,16 +10,33 @@ const BannerModal = ({ onClose }) => {
   const [title, setTitle] = useState('');
   const [photo, setPhoto] = useState(null);
   const [link, setLink] = useState('');
+  const [banners, setBanners] = useState([]); // Estado para almacenar los banners existentes
+
+  // Cargar los banners existentes desde la base de datos
+  useEffect(() => {
+    const fetchBanners = async () => {
+      const bannersRef = dbRef(database, 'banners/');
+      const snapshot = await get(bannersRef);
+      if (snapshot.exists()) {
+        const data = snapshot.val();
+        const bannerList = Object.keys(data).map((key) => ({
+          id: key,
+          ...data[key],
+        }));
+        setBanners(bannerList);
+      }
+    };
+    fetchBanners();
+  }, []);
 
   const handleFileChange = async (e) => {
     if (e.target.files.length > 0) {
       const file = e.target.files[0];
-      
-      // Configuración de compresión
+
       const options = {
-        maxSizeMB: 1, // Tamaño máximo en MB
-        maxWidthOrHeight: 1920, // Tamaño máximo en ancho o alto en píxeles
-        useWebWorker: true, // Usa un web worker para la compresión
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1920,
+        useWebWorker: true,
       };
 
       try {
@@ -41,12 +58,10 @@ const BannerModal = ({ onClose }) => {
     }
 
     try {
-      // Subir la imagen a Firebase Storage
       const photoRef = storageRef(storage, `banners/${photo.name}`);
       await uploadBytes(photoRef, photo);
       const photoURL = await getDownloadURL(photoRef);
 
-      // Guardar la información en Realtime Database usando `push` para agregar nuevos elementos
       const bannerRef = dbRef(database, 'banners/');
       await push(bannerRef, {
         title,
@@ -59,6 +74,26 @@ const BannerModal = ({ onClose }) => {
     } catch (error) {
       console.error('Error al guardar el banner:', error);
       alert('Hubo un error al guardar el banner.');
+    }
+  };
+
+  const handleDelete = async (bannerId, photoURL) => {
+    try {
+      // Eliminar el archivo de Firebase Storage
+      const fileRef = storageRef(storage, `banners/${photoURL.split('%2F')[1].split('?')[0]}`);
+      await deleteObject(fileRef);
+
+      // Eliminar el banner de la base de datos
+      const bannerRef = dbRef(database, `banners/${bannerId}`);
+      await remove(bannerRef);
+
+      // Actualizar el estado de los banners
+      setBanners(banners.filter((banner) => banner.id !== bannerId));
+
+      alert('Banner eliminado con éxito');
+    } catch (error) {
+      console.error('Error al eliminar el banner:', error);
+      alert('Hubo un error al eliminar el banner.');
     }
   };
 
@@ -107,6 +142,28 @@ const BannerModal = ({ onClose }) => {
             <button type="button" onClick={onClose}>Cancelar</button>
           </div>
         </form>
+
+        <h3>Banners existentes</h3>
+        <div className="banner-list">
+          {banners.length === 0 ? (
+            <p>No hay banners disponibles.</p>
+          ) : (
+            <div className="banner-list-container">
+              {banners.map((banner) => (
+                <div key={banner.id} className="banner-item">
+                  <img src={banner.photoURL} alt={banner.title} className="banner-thumbnail" />
+                  <p>{banner.title}</p>
+                  <button
+                    className="delete-button"
+                    onClick={() => handleDelete(banner.id, banner.photoURL)}
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

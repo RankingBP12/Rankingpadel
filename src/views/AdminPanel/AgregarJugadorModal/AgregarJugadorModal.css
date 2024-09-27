@@ -89,3 +89,21 @@
 .form-actions button.cancel-button:hover {
     background-color: #c82333;
 }
+
+.avatar-container {
+    width: 100%; /* Ocupa todo el ancho del contenedor */
+    height: 200px; /* Altura fija para el contenedor del avatar */
+    display: flex;
+    justify-content: center; /* Centra horizontalmente */
+    align-items: center; /* Centra verticalmente */
+    overflow: hidden; /* Oculta cualquier parte de la imagen que se salga del contenedor */
+    margin-top: 20px; /* Espacio entre el formulario y el avatar */
+    border: 1px solid #ddd; /* Opcional: bordes para distinguir el contenedor */
+    border-radius: 4px; /* Bordes redondeados */
+}
+
+.avatar-image {
+    max-width: 100%; /* Asegura que la imagen no exceda el ancho del contenedor */
+    max-height: 100%; /* Asegura que la imagen no exceda la altura del contenedor */
+    object-fit: cover; /* Mantiene la proporción de la imagen y cubre todo el contenedor */
+}

@@ -1,8 +1,7 @@
-// src/components/AgregarClubModal/AgregarClubModal.jsx
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { ref as dbRef, push } from 'firebase/database';
+import { ref as dbRef, push, onValue, remove } from 'firebase/database';
 import { storage, database } from '../../../../firebase.config'; // Asegúrate de importar correctamente
 import './AgregarClubModal.css';
 
@@ -11,6 +10,18 @@ const AgregarClubModal = ({ onClose }) => {
   const [clubLogo, setClubLogo] = useState(null);
   const [clubLocation, setClubLocation] = useState('');
   const [clubPhone, setClubPhone] = useState('');
+  const [clubs, setClubs] = useState([]);
+
+  useEffect(() => {
+    const clubsRef = dbRef(database, 'clubs/');
+    const unsubscribe = onValue(clubsRef, (snapshot) => {
+      const data = snapshot.val();
+      const clubsArray = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
+      setClubs(clubsArray);
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const handleFileChange = (e) => {
     if (e.target.files.length > 0) {
@@ -27,12 +38,10 @@ const AgregarClubModal = ({ onClose }) => {
     }
 
     try {
-      // Subir el logo a Firebase Storage
       const logoRef = storageRef(storage, `club-logos/${clubLogo.name}`);
       await uploadBytes(logoRef, clubLogo);
       const logoURL = await getDownloadURL(logoRef);
 
-      // Guardar la información en Realtime Database usando `push` para agregar nuevos elementos
       const clubRef = dbRef(database, 'clubs/');
       await push(clubRef, {
         name: clubName,
@@ -46,6 +55,14 @@ const AgregarClubModal = ({ onClose }) => {
     } catch (error) {
       console.error('Error al guardar el club:', error);
       alert('Hubo un error al guardar el club.');
+    }
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm('¿Estás seguro de que deseas eliminar este club?')) {
+      remove(dbRef(database, `clubs/${id}`))
+        .then(() => alert('Club eliminado con éxito'))
+        .catch(error => alert('Hubo un error al eliminar el club:', error));
     }
   };
 
@@ -109,6 +126,19 @@ const AgregarClubModal = ({ onClose }) => {
             <button className="cancel-button" type="button" onClick={onClose}>Cancelar</button>
           </div>
         </form>
+
+        {/* Lista de Clubes */}
+        <h3>Lista de Clubes</h3>
+        <div className="club-list">
+          {clubs.map(club => (
+            <div key={club.id} className="club-icon">
+              <img src={club.logoURL} alt={club.name} className="club-logo" />
+              <div className="club-actions">
+                <button onClick={() => handleDelete(club.id)}>Eliminar</button>
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

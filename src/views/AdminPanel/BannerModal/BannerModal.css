@@ -1,91 +1,137 @@
 /* src/views/AdminPanel/BannerModal.css */
 
 .banner-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-  
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.banner-modal-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  position: relative;
+}
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.banner-form {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.form-group input {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-actions button {
+  padding: 10px 15px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.form-actions button:first-of-type {
+  background-color: #4285f4;
+  color: #fff;
+}
+
+.form-actions button:last-of-type {
+  background-color: #f5f5f5;
+}
+
+/* Estilos para la lista de banners */
+.banner-list {
+  display: flex; /* Hacer que el contenedor sea un flex container */
+  flex-wrap: wrap; /* Permitir el wrap para que los elementos bajen cuando sea necesario */
+  max-height: 200px; /* Ajusta la altura máxima según sea necesario */
+  overflow-y: auto; /* Agrega scroll interno si es necesario */
+  margin-top: 20px;
+  padding: 5px; /* Agregar un pequeño padding */
+  justify-content: space-around;
+}
+
+.banner-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5px; /* Ajustar el margen para un espaciado uniforme */
+  padding: 5px; /* Ajustar el padding para un espaciado uniforme */
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 100px; /* Ancho del cuadrado */
+  height: 100px; /* Alto del cuadrado */
+  overflow: hidden; /* Evita que las imágenes se desborden */
+}
+
+.banner-thumbnail {
+  width: 100%;
+  height: auto;
+  max-height: 60px; /* Altura máxima para la imagen */
+  object-fit: cover; /* Mantiene la proporción de la imagen */
+}
+
+.banner-item p {
+  margin: 5px 0;
+  text-align: center;
+  font-size: 1px; /* Tamaño de fuente ajustado para el título */
+}
+
+.delete-button {
+  margin-top: 5px;
+  background-color: #e57373;
+  color: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+
+@media (max-width: 600px) {
   .banner-modal-content {
-    background: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    width: 90%;
-    max-width: 500px;
-    position: relative;
-  }
-  
-  .modal-close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    background: transparent;
-    border: none;
-    font-size: 24px;
-    cursor: pointer;
-  }
-  
-  .banner-form {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .form-group {
-    margin-bottom: 15px;
-  }
-  
-  .form-group label {
-    display: block;
-    margin-bottom: 5px;
-  }
-  
-  .form-group input {
-    width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-  
-  .form-actions {
-    display: flex;
-    justify-content: space-between;
-  }
-  
-  .form-actions button {
-    padding: 10px 15px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .form-actions button:first-of-type {
-    background-color: #4285f4;
-    color: #fff;
-  }
-  
-  .form-actions button:last-of-type {
-    background-color: #f5f5f5;
-  }
-  
-  @media (max-width: 600px) {
-    .banner-modal-content {
       width: 95%;
-    }
-  
-    .form-actions {
+  }
+
+  .form-actions {
       flex-direction: column;
-    }
-  
-    .form-actions button {
+  }
+
+  .form-actions button {
       margin-bottom: 10px;
       width: 100%;
-    }
   }
-  
+}

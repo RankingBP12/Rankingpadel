@@ -80,3 +80,30 @@
     font-size: 16px;
   }
 }
+
+/* Estilos para los botones en el header */
+.nav-button {
+  background: none; /* Sin fondo */
+  color: grey; /* Color del texto */
+  font-size: 18px; /* Tamaño de fuente igual al de nav-link */
+  padding: 8px 12px; /* Espaciado interno */
+  border: none; /* Sin borde */
+  border-radius: 4px; /* Esquinas redondeadas */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Transición suave */
+  cursor: pointer; /* Cambia el cursor al pasar el mouse */
+}
+
+.nav-button:hover {
+  background-color: rgba(0, 0, 0, 0.1); /* Fondo gris al hacer hover */
+  color: #fff; /* Cambia a blanco al hacer hover */
+  text-shadow:
+      0 0 7px #0818ef,
+      0 0 10px #1866db,
+      0 0 21px #ffffff,
+      0 0 42px rgb(0, 64, 255),
+      0 0 82px rgb(0, 72, 255),
+      0 0 92px rgb(0, 0, 255),
+      0 0 102px rgb(0, 34, 255),
+      0 0 151px rgb(4, 0, 255); /* Efecto neón al hacer hover */
+}
+

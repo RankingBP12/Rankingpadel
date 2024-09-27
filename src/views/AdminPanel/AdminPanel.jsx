@@ -1,8 +1,14 @@
+// src/components/AdminPanel.js
 import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../../../firebase.config';
+import WhatsAppButton from '../../views/Inicio/WhatsAppButton/WhatsAppButton'; 
+import WhatsAppSettings from './WhatsAppSettings/WhatsAppSettings'; // Importar el nuevo componente
 import './AdminPanel.css';
+import AgregarReglamentoButton from './AgregarReglamentButton/AgregarReglamentoButton';
+import ReglamentoModal from './ReglamentoModal/ReglamentoModal';
 
+// Cargar los otros componentes de manera lazy
 const CargaBannerButton = lazy(() => import('./CargarBanner/CargarBannerButton'));
 const AgendaTorneoButton = lazy(() => import('./AgendaTorneo/AgendaTorneoButton'));
 const AgregarJugadorButton = lazy(() => import('./AgregarJugadorButton/AgregarJugadorButton'));
@@ -19,6 +25,8 @@ const AdminPanel = () => {
   const [showTorneoModal, setShowTorneoModal] = useState(false);
   const [showJugadorModal, setShowJugadorModal] = useState(false);
   const [showClubModal, setShowClubModal] = useState(false);
+  const [showReglamentoModal, setShowReglamentoModal] = useState(false);
+  const [whatsAppNumber, setWhatsAppNumber] = useState('1234567890');
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged(user => {
@@ -30,46 +38,46 @@ const AdminPanel = () => {
     return () => unsubscribe();
   }, [navigate]);
 
-  const handleOpenBannerModal = () => setShowBannerModal(true);
-  const handleCloseBannerModal = () => setShowBannerModal(false);
-
-  const handleOpenTorneoModal = () => setShowTorneoModal(true);
-  const handleCloseTorneoModal = () => setShowTorneoModal(false);
-
-  const handleOpenJugadorModal = () => setShowJugadorModal(true);
-  const handleCloseJugadorModal = () => setShowJugadorModal(false);
-
-  const handleOpenClubModal = () => setShowClubModal(true);
-  const handleCloseClubModal = () => setShowClubModal(false);
-
   return (
     <div>
       <h1>Admin Panel</h1>
+
+      <WhatsAppButton phoneNumber={whatsAppNumber} />
+     
+
       <div className="admin-panel-buttons">
         <Suspense fallback={<div>Loading CargaBannerButton...</div>}>
-          <CargaBannerButton onClick={handleOpenBannerModal} />
+          <CargaBannerButton onClick={() => setShowBannerModal(true)} />
         </Suspense>
         <Suspense fallback={<div>Loading AgendaTorneoButton...</div>}>
-          <AgendaTorneoButton onClick={handleOpenTorneoModal} />
+          <AgendaTorneoButton onClick={() => setShowTorneoModal(true)} />
         </Suspense>
         <Suspense fallback={<div>Loading AgregarJugadorButton...</div>}>
-          <AgregarJugadorButton onClick={handleOpenJugadorModal} />
+          <AgregarJugadorButton onClick={() => setShowJugadorModal(true)} />
         </Suspense>
         <Suspense fallback={<div>Loading AgregarClubButton...</div>}>
-          <AgregarClubButton onClick={handleOpenClubModal} />
+          <AgregarClubButton onClick={() => setShowClubModal(true)} />
+        </Suspense>
+        <Suspense fallback={<div>Loading AgregarReglamentoButton...</div>}>
+          <AgregarReglamentoButton onClick={() => setShowReglamentoModal(true)} />
         </Suspense>
       </div>
+      <WhatsAppSettings currentWhatsAppNumber={whatsAppNumber} />
+
       <Suspense fallback={<div>Loading BannerModal...</div>}>
-        {showBannerModal && <BannerModal onClose={handleCloseBannerModal} />}
+        {showBannerModal && <BannerModal onClose={() => setShowBannerModal(false)} />}
       </Suspense>
       <Suspense fallback={<div>Loading AgendaTorneoModal...</div>}>
-        {showTorneoModal && <AgendaTorneoModal onClose={handleCloseTorneoModal} />}
+        {showTorneoModal && <AgendaTorneoModal onClose={() => setShowTorneoModal(false)} />}
       </Suspense>
       <Suspense fallback={<div>Loading AgregarJugadorModal...</div>}>
-        {showJugadorModal && <AgregarJugadorModal onClose={handleCloseJugadorModal} />}
+        {showJugadorModal && <AgregarJugadorModal onClose={() => setShowJugadorModal(false)} />}
       </Suspense>
       <Suspense fallback={<div>Loading AgregarClubModal...</div>}>
-        {showClubModal && <AgregarClubModal onClose={handleCloseClubModal} />}
+        {showClubModal && <AgregarClubModal onClose={() => setShowClubModal(false)} />}
+      </Suspense>
+      <Suspense fallback={<div>Loading ReglamentoModal...</div>}>
+        {showReglamentoModal && <ReglamentoModal onClose={() => setShowReglamentoModal(false)} />}
       </Suspense>
       <Suspense fallback={<div>Loading PlayerTable...</div>}>
         <PlayerTable />

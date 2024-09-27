@@ -4,6 +4,7 @@ import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage
 import { ref, set, get } from 'firebase/database';
 import { storage, database } from '../../../../firebase.config';
 import './AgregarJugadorModal.css';
+import GenericPhoto from '../../../assets/GeneroJugadores/nombre.png'
 
 const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, setJugadores }) => {
   const [name, setName] = useState(editPlayer ? editPlayer.name : '');
@@ -12,7 +13,6 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
   const [gender, setGender] = useState(editPlayer ? editPlayer.gender : '');
   const [category, setCategory] = useState(editPlayer ? editPlayer.category : '');
   const [nextId, setNextId] = useState(null);
-  const [avatarURL, setAvatarURL] = useState('');
 
   useEffect(() => {
     const fetchNextId = async () => {
@@ -20,7 +20,6 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
         const jugadoresRef = ref(database, 'jugadores/');
         const snapshot = await get(jugadoresRef);
         const players = snapshot.val() || {};
-
         const ids = Object.keys(players).map(key => players[key].id);
         const maxId = ids.length > 0 ? Math.max(...ids) : 0;
         setNextId(maxId + 1);
@@ -31,17 +30,6 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
 
     fetchNextId();
   }, []);
-
-  useEffect(() => {
-    // Generar avatar cuando no se selecciona una foto
-    if (!photo && name) {
-      const initials = name.split(' ').map(word => word[0]).join('');
-      // Reemplaza `styleName` con el estilo que prefieras, por ejemplo: `adventurer`
-      const avatarStyle = 'pixel-art-neutral'; 
-      const avatarUrl = `https://api.dicebear.com/9.x/${avatarStyle}/svg?seed=${initials}`;
-      setAvatarURL(avatarUrl);
-    }
-  }, [name, photo]);
 
   const handleSave = async (e) => {
     e.preventDefault();
@@ -59,7 +47,7 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
     }
 
     try {
-      let photoURL = avatarURL; // Usa el avatar si no hay foto
+      let photoURL = GenericPhoto;
 
       if (photo) {
         const photoRef = storageRef(storage, `jugadores/${photo.name}`);
@@ -208,9 +196,8 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
             <button className="cancel-button" type="button" onClick={onClose}>Cancelar</button>
           </div>
         </form>
-        {/* Mostrar el avatar o la foto cargada */}
         <div className="avatar-container">
-          <img src={photo ? URL.createObjectURL(photo) : avatarURL} alt="Avatar" className="avatar-image" />
+          <img src={photo ? URL.createObjectURL(photo) : GenericPhoto} alt="Avatar" className="avatar-image" />
         </div>
       </div>
     </div>

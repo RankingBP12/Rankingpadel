@@ -1,9 +1,10 @@
+// src/components/ClubList/ClubList.jsx
 import React, { useState, useEffect } from 'react';
-import { ref as dbRef, onValue, remove, update } from 'firebase/database';
-import { database } from '../../../../firebase.config'; // Asegúrate de importar correctamente
+import { ref as dbRef, onValue, remove } from 'firebase/database';
+import { database } from '../../../../firebase.config';
 import './ClubList.css';
 
-const ClubList = ({ onEdit, onDelete }) => {
+const ClubList = ({ onEdit }) => {
   const [clubs, setClubs] = useState([]);
 
   useEffect(() => {
@@ -30,6 +31,11 @@ const ClubList = ({ onEdit, onDelete }) => {
       {clubs.map(club => (
         <div key={club.id} className="club-icon">
           <img src={club.logoURL} alt={club.name} className="club-logo" />
+          <div className="club-info">
+            <h3>{club.name}</h3>
+            <p>Ubicación: {club.location}</p>
+            <p>Teléfono: {club.phone}</p>
+          </div>
           <div className="club-actions">
             <button onClick={() => onEdit(club)}>Editar</button>
             <button onClick={() => handleDelete(club.id)}>Eliminar</button>

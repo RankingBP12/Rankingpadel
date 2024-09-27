@@ -18,11 +18,13 @@
     border: 1px solid #ddd;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 400px; /* Ancho del modal */
-    max-width: 90%; /* Asegura que el modal no sea más ancho que el 90% de la pantalla */
+    width: 90%;
+    max-width: 600px;
+    max-height: 85vh;
     padding: 20px;
     box-sizing: border-box;
     position: relative;
+    overflow: hidden;
 }
 
 .modal-close {
@@ -77,7 +79,7 @@
 }
 
 .form-actions button.save-button {
-    background-color: #28a745; /* Verde para guardar */
+    background-color: #28a745;
 }
 
 .form-actions button.save-button:hover {
@@ -85,9 +87,59 @@
 }
 
 .form-actions button.cancel-button {
-    background-color: #dc3545; /* Rojo para cancelar */
+    background-color: #dc3545;
 }
 
 .form-actions button.cancel-button:hover {
     background-color: #c82333;
+}
+
+.club-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 15px;
+    margin-top: 20px;
+    max-height: calc(80vh - 160px);
+    overflow-y: auto;
+    padding-right: 10px;
+    padding-bottom: 20px;
+}
+
+.club-card {
+    background: #f8f8f8;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    overflow: hidden;
+    text-align: center;
+    padding: 10px;
+    transition: transform 0.3s;
+}
+
+.club-card:hover {
+    transform: scale(1.05);
+}
+
+.club-logo {
+    width: 100%;
+    max-width: 80px;
+    height: auto;
+    margin: 0 auto;
+}
+
+.club-info {
+    margin: 10px 0;
+}
+
+.delete-button {
+    background: red;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 5px 10px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.delete-button:hover {
+    background: darkred;
 }
