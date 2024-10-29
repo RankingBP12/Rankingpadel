@@ -40,30 +40,33 @@ const PlayerTable = () => {
 
   const filterPlayers = (gender, term, points) => {
     try {
-      const playersArray = Object.keys(jugadores)
-        .filter(key => jugadores[key] !== null && jugadores[key] !== undefined)
-        .map(key => ({ id: jugadores[key].id, ...jugadores[key] }));
-      
-      let filtered = playersArray.filter(player => player.name.toLowerCase().includes(term.toLowerCase()));
-  
-      if (gender) {
-        filtered = filtered.filter(player => player.gender === gender);
-      }
-  
-      if (points === 'greater') {
-        filtered = filtered.filter(player => player.points > 0).sort((a, b) => b.points - a.points);
-      } else if (points === 'less') {
-        filtered = filtered.filter(player => player.points > 0).sort((a, b) => a.points - b.points);
-      } else if (points === 'zero') {
-        filtered = filtered.filter(player => player.points === 0).sort((a, b) => a.name.localeCompare(b.name));
-      }
-  
-      setFilteredPlayers(filtered);
+        const playersArray = Object.keys(jugadores)
+            .filter(key => jugadores[key] !== null && jugadores[key] !== undefined)
+            .map(key => ({ id: jugadores[key].id, ...jugadores[key] }));
+        
+        // Validamos que player.name exista antes de aplicar toLowerCase()
+        let filtered = playersArray.filter(player => 
+            player.name && player.name.toLowerCase().includes(term.toLowerCase())
+        );
+
+        if (gender) {
+            filtered = filtered.filter(player => player.gender === gender);
+        }
+
+        if (points === 'greater') {
+            filtered = filtered.filter(player => player.points > 0).sort((a, b) => b.points - a.points);
+        } else if (points === 'less') {
+            filtered = filtered.filter(player => player.points > 0).sort((a, b) => a.points - b.points);
+        } else if (points === 'zero') {
+            filtered = filtered.filter(player => player.points === 0).sort((a, b) => a.name.localeCompare(b.name));
+        }
+
+        setFilteredPlayers(filtered);
     } catch (error) {
-      console.error("Error filtering players:", error);
-      setFilteredPlayers([]);
+        console.error("Error filtering players:", error);
+        setFilteredPlayers([]);
     }
-  };
+};
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;

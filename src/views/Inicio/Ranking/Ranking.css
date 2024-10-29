@@ -82,7 +82,7 @@ tr.highlight-row:nth-child(1) {
 td {
   height: 5rem;
   font-family: "Rubik", sans-serif;
-  font-size: 1.4rem;
+  font-size: 0.8rem;
   padding: 1rem 2rem;
   position: relative;
 }
