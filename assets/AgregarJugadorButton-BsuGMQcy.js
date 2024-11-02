@@ -1,1 +1,0 @@
-import{j as r,P as e}from"./index-qhty-QVc.js";const s=({onClick:a})=>r.jsx("div",{className:"agregar-jugador-card",onClick:a,children:r.jsx("h1",{className:"agregar-jugador-text",children:"Agregar Jugador"})});s.propTypes={onClick:e.func.isRequired};export{s as default};
