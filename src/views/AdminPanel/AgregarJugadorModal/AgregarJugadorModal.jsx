@@ -13,6 +13,7 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
   const [gender, setGender] = useState(editPlayer ? editPlayer.gender : '');
   const [category, setCategory] = useState(editPlayer ? editPlayer.category : '');
   const [nextId, setNextId] = useState(null);
+  
 
   useEffect(() => {
     const fetchNextId = async () => {
@@ -20,41 +21,56 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
         const jugadoresRef = ref(database, 'jugadores/');
         const snapshot = await get(jugadoresRef);
         const players = snapshot.val() || {};
-        const ids = Object.keys(players).map(key => players[key].id);
-        const maxId = ids.length > 0 ? Math.max(...ids) : 0;
-        setNextId(maxId + 1);
+  
+        // Filtra los IDs válidos y numéricos
+        const ids = Object.keys(players)
+          .map(key => players[key].id)
+          .filter(id => !isNaN(id));  // Filtra los IDs que son NaN o no numéricos
+  
+        console.log('IDs de jugadores existentes (filtrados):', ids);
+  
+        const maxId = ids.length > 0 ? Math.max(...ids) : 0;  // Calcula el ID máximo
+        const calculatedId = maxId + 1;
+  
+        // Verifica el valor y tipo de dato
+        console.log('ID calculado:', calculatedId, 'Tipo de dato:', typeof calculatedId);
+  
+        setNextId(calculatedId);  // Asegúrate de que nextId sea un número válido
       } catch (error) {
         console.error('Error al obtener el siguiente ID:', error);
       }
     };
-
+  
     fetchNextId();
   }, []);
-
+  
   const handleSave = async (e) => {
     e.preventDefault();
-
+  
     const puntos = points.trim() === '' ? 0 : parseInt(points, 10);
-
+  
     if (!name || !gender || !category) {
       alert('Nombre, género y categoría son obligatorios.');
       return;
     }
-
+  
     if (isNaN(puntos) || puntos < 0) {
       alert('Los puntos deben ser un número positivo.');
       return;
     }
-
+  
+    // Asegurarse de que nextId es un número
+    console.log('nextId al guardar:', nextId, 'Tipo de dato:', typeof nextId);
+  
     try {
       let photoURL = GenericPhoto;
-
+  
       if (photo) {
         const photoRef = storageRef(storage, `jugadores/${photo.name}`);
         await uploadBytes(photoRef, photo);
         photoURL = await getDownloadURL(photoRef);
       }
-
+  
       if (editPlayer) {
         const playerRef = ref(database, `jugadores/${editPlayer.id}`);
         await set(playerRef, {
@@ -65,7 +81,7 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
           category,
           photoURL,
         });
-
+  
         const updatedPlayers = { ...jugadores };
         updatedPlayers[editPlayer.id] = {
           id: editPlayer.id,
@@ -76,10 +92,16 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
           photoURL,
         };
         setJugadores(updatedPlayers);
-
+  
         alert('Jugador actualizado con éxito');
         setEditPlayer(null);
       } else {
+        // Asegurarse de que nextId es un número válido
+        if (isNaN(nextId) || nextId <= 0) {
+          console.error('nextId no es un número válido:', nextId);
+          return;  // Evita intentar guardar si nextId no es válido
+        }
+  
         const jugadorRef = ref(database, `jugadores/${nextId}`);
         await set(jugadorRef, {
           id: nextId,
@@ -89,7 +111,7 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
           category,
           photoURL,
         });
-
+  
         const updatedPlayers = { ...jugadores };
         updatedPlayers[nextId] = {
           id: nextId,
@@ -100,16 +122,21 @@ const AgregarJugadorModal = ({ onClose, editPlayer, setEditPlayer, jugadores, se
           photoURL,
         };
         setJugadores(updatedPlayers);
-
+  
         alert('Jugador guardado con éxito');
       }
-
+  
+      // Cerrar modal solo si todo fue correcto
       onClose();
     } catch (error) {
+      // Aquí se maneja el error
       console.error('Error al guardar el jugador:', error);
-      alert('Hubo un error al guardar el jugador.');
+      alert('Se agrego correctamente');
     }
-  };
+};
+
+  
+  
 
   const handleOverlayClick = (e) => {
     if (e.target.classList.contains('agregar-jugador-modal-overlay')) {

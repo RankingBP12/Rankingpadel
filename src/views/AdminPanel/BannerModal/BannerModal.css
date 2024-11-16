@@ -11,6 +11,7 @@
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  overflow-y: auto;
 }
 
 .banner-modal-content {
@@ -19,7 +20,9 @@
   padding: 20px;
   width: 90%;
   max-width: 500px;
+  max-height: 90%; /* Limitar la altura del modal al 90% de la ventana */
   position: relative;
+  overflow-y: auto; /* Permitir el scroll si el contenido excede la altura */
 }
 
 .modal-close {
@@ -35,6 +38,8 @@
 .banner-form {
   display: flex;
   flex-direction: column;
+  height: 100%; /* Hacer que el formulario ocupe toda la altura disponible */
+  overflow-y: auto; /* Permitir el scroll en el formulario si es necesario */
 }
 
 .form-group {

@@ -1,10 +1,20 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import ReglamentoModal from './ReglamentoModal/ReglamentoModal';
 import './Header.css';
 import Logo from '../../assets/Header/logo.png';
 
 const Header = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const location = useLocation();
+
+  // Rutas donde quieres ocultar el Header
+  const hiddenRoutes = ['/admin'];
+
+  // Si la ruta actual está en las ocultas, no renderizar el Header
+  if (hiddenRoutes.includes(location.pathname)) {
+    return null;
+  }
 
   const openModal = () => {
     setModalIsOpen(true);

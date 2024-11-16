@@ -13,6 +13,17 @@
   z-index: 1000;
 }
 
+.nav-button {
+  background: none; /* Sin fondo */
+  color: grey; /* Color del texto */
+font-size: 18px;
+  padding: 8px 12px; /* Espaciado interno */
+  border: none; /* Sin borde */
+  border-radius: 4px; /* Esquinas redondeadas */
+  transition: background-color 0.3s ease, color 0.3s ease; /* Transición suave */
+  cursor: pointer; /* Cambia el cursor al pasar el mouse */
+}
+
 .logo {
   display: flex; /* Añadido para alinear el texto con el logo */
   align-items: center; /* Centra verticalmente el texto y el logo */
@@ -79,19 +90,15 @@
   .nav-link {
     font-size: 16px;
   }
+
+  /* Cambiar el tamaño de fuente de nav-button en dispositivos móviles */
+  .nav-button {
+    font-size: 12px; /* Ajuste del tamaño de fuente para dispositivos móviles */
+  }
 }
 
 /* Estilos para los botones en el header */
-.nav-button {
-  background: none; /* Sin fondo */
-  color: grey; /* Color del texto */
-  font-size: 18px; /* Tamaño de fuente igual al de nav-link */
-  padding: 8px 12px; /* Espaciado interno */
-  border: none; /* Sin borde */
-  border-radius: 4px; /* Esquinas redondeadas */
-  transition: background-color 0.3s ease, color 0.3s ease; /* Transición suave */
-  cursor: pointer; /* Cambia el cursor al pasar el mouse */
-}
+
 
 .nav-button:hover {
   background-color: rgba(0, 0, 0, 0.1); /* Fondo gris al hacer hover */

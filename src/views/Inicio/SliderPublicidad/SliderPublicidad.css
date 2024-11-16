@@ -1,0 +1,81 @@
+/* SliderPublicidad.css */
+.slider-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .slider {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    position: relative;
+  }
+  
+  .container-item {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    margin: 1rem;
+    position: relative; /* Necesario para las transiciones */
+    width: 420px;
+    height: 420px;
+    overflow: hidden; /* Asegura que las imágenes no se desborden fuera del contenedor */
+  }
+  
+  .container-item a {
+    position: absolute; /* Asegura que el enlace no afecte la posición de las imágenes */
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display: block; /* Hace que el enlace ocupe todo el contenedor */
+    z-index: 1; /* Coloca el enlace por encima de las imágenes, pero sin interferir en la transición */
+  }
+  
+  .container-item img {
+    width: 380px;
+    height: 380px;
+    object-fit: cover;
+    border-radius: 8px;
+    opacity: 0; /* Por defecto las imágenes están ocultas */
+    transition: opacity 1s ease-in-out; /* Transición de opacidad */
+    z-index: 0; /* Asegura que las imágenes estén debajo del enlace */
+  }
+  
+  /* Clase para mostrar la imagen */
+  .container-item img.show {
+    opacity: 1; /* Imagen visible */
+  }
+  
+  .container-item h3 {
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: bold;
+  }
+  
+  /* Media query para dispositivos móviles */
+  @media (max-width: 768px) {
+    .slider {
+      flex-direction: column;
+      align-items: center;
+      margin: 1rem;
+    }
+  
+    .container-item {
+      margin: 1rem;
+    }
+  
+    .container-item img {
+      width: 380px;
+      height: 380px;
+    }
+  
+    .container-item h3 {
+      font-size: 14px;
+    }
+  }
+  

@@ -23,7 +23,6 @@
   z-index: 10000; /* Opcional: asegurar que el contenido del modal también esté por encima */
 }
 
-
 .modal-gnr-title {
   margin-top: 0;
   font-size: 24px;
@@ -105,10 +104,12 @@
 
   .modal-gnr-player-info h4 {
     font-size: 16px;
+    color: #003366; /* Azul oscuro para móviles */
   }
 
   .modal-gnr-player-info p {
     font-size: 14px;
+    color: #003366; /* Azul oscuro para móviles */
   }
 
   .modal-gnr-player-card {

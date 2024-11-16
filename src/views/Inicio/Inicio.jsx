@@ -4,11 +4,14 @@ import CardsTorneos from './CardsTorneos/CardsTorneos';
 import GenerosJugadores from './GenerosJugadores/GenerosJugadores';
 import LogosDeCanchas from './LogosDeCanchas/LogosDeCanchas';
 import RankingSlide from './Ranking/Ranking';
+import SliderPublicidad from './SliderPublicidad/SliderPublicidad';
 import WhatsAppButton from './WhatsAppButton/WhatsAppButton';
+import PopupInicio from './PopupInicio/PopupInicio';
 
 const Inicio = () => {
   return (
     <div>
+      <PopupInicio /> 
       <Header />
       <BannerP />
       <section id='canchas'>
@@ -16,6 +19,10 @@ const Inicio = () => {
       </section>
       <section id='torneos'>
         <CardsTorneos />
+      </section>
+
+      <section>
+        <SliderPublicidad />
       </section>
       <section id='jugadores'>
         <GenerosJugadores />
@@ -26,6 +33,9 @@ const Inicio = () => {
             <RankingSlide />
           </section>
         </div>
+        <section>
+          <SliderPublicidad />
+        </section>
       </div>
       <WhatsAppButton />
     </div>

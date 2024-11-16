@@ -4,7 +4,7 @@ import './CargarBannerButton.css';
 const CargaBannerButton = ({ onClick }) => {
   return (
     <div className="carga-banner-card" onClick={onClick}>
-      <h1 className="carga-banner-text">Carga de banner</h1>
+      <h1 className="carga-banner-text">Publicidad</h1>
     </div>
   );
 };

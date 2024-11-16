@@ -2,46 +2,52 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ref as storageRef, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
 import { ref as dbRef, push, get, remove } from 'firebase/database';
-import { storage, database } from '../../../../firebase.config'; // Asegúrate de importar correctamente
-import imageCompression from 'browser-image-compression'; // Importa la librería de compresión
+import { storage, database } from '../../../../firebase.config';
+import imageCompression from 'browser-image-compression';
 import './BannerModal.css';
 
 const BannerModal = ({ onClose }) => {
   const [title, setTitle] = useState('');
   const [photo, setPhoto] = useState(null);
   const [link, setLink] = useState('');
-  const [banners, setBanners] = useState([]); // Estado para almacenar los banners existentes
+  const [objectType, setObjectType] = useState('banners'); // banners | popup | containers
+  const [viewType, setViewType] = useState('banners'); // banners | popup | containers
+  const [items, setItems] = useState([]); // Para almacenar banners o popup contenedores
+  const [containerPhotos, setContainerPhotos] = useState([null, null, null]); // Tres imágenes para contenedores
+  const [containerTitles, setContainerTitles] = useState(['', '', '']); // Títulos de contenedores
+  const [containerLinks, setContainerLinks] = useState(['', '', '']); // Links de contenedores
 
-  // Cargar los banners existentes desde la base de datos
   useEffect(() => {
-    const fetchBanners = async () => {
-      const bannersRef = dbRef(database, 'banners/');
-      const snapshot = await get(bannersRef);
+    const fetchItems = async () => {
+      const itemsRef = dbRef(database, `${viewType}/`);
+      const snapshot = await get(itemsRef);
       if (snapshot.exists()) {
         const data = snapshot.val();
-        const bannerList = Object.keys(data).map((key) => ({
+        const itemList = Object.keys(data).map((key) => ({
           id: key,
           ...data[key],
         }));
-        setBanners(bannerList);
+        setItems(itemList);
+      } else {
+        setItems([]);
       }
     };
-    fetchBanners();
-  }, []);
+    fetchItems();
+  }, [viewType]);
 
-  const handleFileChange = async (e) => {
+  const handleFileChange = async (e, index = null) => {
     if (e.target.files.length > 0) {
       const file = e.target.files[0];
-
-      const options = {
-        maxSizeMB: 1,
-        maxWidthOrHeight: 1920,
-        useWebWorker: true,
-      };
-
+      const options = { maxSizeMB: 1, maxWidthOrHeight: 1920, useWebWorker: true };
       try {
         const compressedFile = await imageCompression(file, options);
-        setPhoto(compressedFile);
+        if (index !== null) {
+          const updatedPhotos = [...containerPhotos];
+          updatedPhotos[index] = compressedFile;
+          setContainerPhotos(updatedPhotos);
+        } else {
+          setPhoto(compressedFile);
+        }
       } catch (error) {
         console.error('Error al comprimir la imagen:', error);
         alert('Hubo un error al comprimir la imagen.');
@@ -51,63 +57,76 @@ const BannerModal = ({ onClose }) => {
 
   const handleSave = async (e) => {
     e.preventDefault();
-
-    if (!photo) {
-      alert('Por favor, seleccione una imagen.');
-      return;
-    }
-
     try {
-      const photoRef = storageRef(storage, `banners/${photo.name}`);
-      await uploadBytes(photoRef, photo);
-      const photoURL = await getDownloadURL(photoRef);
+      const savePhoto = async (photoFile, path) => {
+        const photoRef = storageRef(storage, path);
+        await uploadBytes(photoRef, photoFile);
+        return await getDownloadURL(photoRef);
+      };
 
-      const bannerRef = dbRef(database, 'banners/');
-      await push(bannerRef, {
-        title,
-        photoURL,
-        link,
-      });
+      if (objectType === 'containers') {
+        const containerPromises = [];
+        for (const [index, photoFile] of containerPhotos.entries()) {
+          if (photoFile) {
+            const url = await savePhoto(photoFile, `${objectType}/container${index + 1}/${photoFile.name}`);
+            const title = containerTitles[index];
+            const link = containerLinks[index]; // Link específico para cada contenedor
+            const objectRef = dbRef(database, `${objectType}/container${index + 1}/`);
+            containerPromises.push(push(objectRef, { title, photoURL: url, link }));
+          }
+        }
+        await Promise.all(containerPromises);
+      } else if (objectType === 'popup') {
+        const photoURL = await savePhoto(photo, `${objectType}/${photo.name}`);
+        const objectRef = dbRef(database, `${objectType}/`);
+        await push(objectRef, { title, photoURL, link });
+      } else {
+        const photoURL = await savePhoto(photo, `${objectType}/${photo.name}`);
+        const objectRef = dbRef(database, `${objectType}/`);
+        await push(objectRef, { title, photoURL, link });
+      }
 
-      alert('Banner guardado con éxito');
+      alert('Elemento guardado con éxito');
       onClose();
     } catch (error) {
-      console.error('Error al guardar el banner:', error);
-      alert('Hubo un error al guardar el banner.');
+      console.error('Error al guardar el elemento:', error);
+      alert('Hubo un error al guardar el elemento.');
     }
   };
 
-  const handleDelete = async (bannerId, photoURL) => {
+  const handleDelete = async (id, photoURL) => {
     try {
-      // Eliminar el archivo de Firebase Storage
-      const fileRef = storageRef(storage, `banners/${photoURL.split('%2F')[1].split('?')[0]}`);
-      await deleteObject(fileRef);
+      // Eliminar foto de Firebase Storage
+      const photoRef = storageRef(storage, photoURL);
+      await deleteObject(photoRef);
+      
+      // Eliminar entrada de la base de datos
+      const itemRef = dbRef(database, `${viewType}/${id}`);
+      await remove(itemRef);
 
-      // Eliminar el banner de la base de datos
-      const bannerRef = dbRef(database, `banners/${bannerId}`);
-      await remove(bannerRef);
+      // Actualizar lista de items
+      setItems((prevItems) => prevItems.filter((item) => item.id !== id));
 
-      // Actualizar el estado de los banners
-      setBanners(banners.filter((banner) => banner.id !== bannerId));
-
-      alert('Banner eliminado con éxito');
+      alert('Elemento eliminado con éxito');
     } catch (error) {
-      console.error('Error al eliminar el banner:', error);
-      alert('Hubo un error al eliminar el banner.');
-    }
-  };
-
-  const handleOverlayClick = (e) => {
-    if (e.target.classList.contains('banner-modal-overlay')) {
-      onClose();
+      console.error('Error al eliminar el elemento:', error);
+      alert('Hubo un error al eliminar el elemento.');
     }
   };
 
   return (
-    <div className="banner-modal-overlay" onClick={handleOverlayClick}>
+    <div className="banner-modal-overlay" onClick={(e) => e.target.classList.contains('banner-modal-overlay') && onClose()}>
       <div className="banner-modal-content">
-        <h2>Cargar Banner</h2>
+        <h2>Cargar Imagen</h2>
         <form className="banner-form" onSubmit={handleSave}>
+          <div className="form-group">
+            <label htmlFor="objectType">Tipo de Objeto</label>
+            <select id="objectType" value={objectType} onChange={(e) => setObjectType(e.target.value)}>
+              <option value="banners">Banners</option>
+              <option value="popup">Popup</option>
+              <option value="containers">3 Contenedores</option>
+            </select>
+          </div>
           <div className="form-group">
             <label htmlFor="title">Título</label>
             <input
@@ -118,24 +137,63 @@ const BannerModal = ({ onClose }) => {
               placeholder="Ingrese el título"
             />
           </div>
+
+          {objectType === 'containers' && (
+            <div className="container-photos">
+              {[0, 1, 2].map((index) => (
+                <div key={index} className="form-group">
+                  <label htmlFor={`container-title-${index}`}>Título de Contenedor {index + 1}</label>
+                  <input
+                    id={`container-title-${index}`}
+                    type="text"
+                    value={containerTitles[index]}
+                    onChange={(e) => {
+                      const updatedTitles = [...containerTitles];
+                      updatedTitles[index] = e.target.value;
+                      setContainerTitles(updatedTitles);
+                    }}
+                    placeholder={`Título del contenedor ${index + 1}`}
+                  />
+                  <label htmlFor={`container-link-${index}`}>Link del Contenedor {index + 1}</label>
+                  <input
+                    id={`container-link-${index}`}
+                    type="text"
+                    value={containerLinks[index]}
+                    onChange={(e) => {
+                      const updatedLinks = [...containerLinks];
+                      updatedLinks[index] = e.target.value;
+                      setContainerLinks(updatedLinks);
+                    }}
+                    placeholder={`Link del contenedor ${index + 1}`}
+                  />
+                  <label htmlFor={`photo-${index}`}>Imagen {index + 1}</label>
+                  <input
+                    id={`photo-${index}`}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleFileChange(e, index)}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+
+          {objectType !== 'containers' && (
+            <div className="form-group">
+              <label htmlFor="link">Link</label>
+              <input
+                id="link"
+                type="text"
+                value={link}
+                onChange={(e) => setLink(e.target.value)}
+                placeholder="Ingrese el link"
+              />
+            </div>
+          )}
+
           <div className="form-group">
-            <label htmlFor="photo">Banner</label>
-            <input
-              id="photo"
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-            />
-          </div>
-          <div className="form-group">
-            <label htmlFor="link">Link</label>
-            <input
-              id="link"
-              type="text"
-              value={link}
-              onChange={(e) => setLink(e.target.value)}
-              placeholder="Ingrese el enlace"
-            />
+            <label htmlFor="photo">Imagen</label>
+            <input id="photo" type="file" accept="image/*" onChange={handleFileChange} />
           </div>
           <div className="form-actions">
             <button type="submit">Guardar</button>
@@ -143,25 +201,25 @@ const BannerModal = ({ onClose }) => {
           </div>
         </form>
 
-        <h3>Banners existentes</h3>
-        <div className="banner-list">
-          {banners.length === 0 ? (
-            <p>No hay banners disponibles.</p>
+        <h3>Imágenes existentes</h3>
+        <div className="form-group">
+          <label htmlFor="viewType">Ver por tipo</label>
+          <select id="viewType" value={viewType} onChange={(e) => setViewType(e.target.value)}>
+            <option value="banners">Banners</option>
+            <option value="popup">Popup</option>
+            <option value="containers">3 Contenedores</option>
+          </select>
+        </div>
+        <div className="item-list">
+          {items.length === 0 ? (
+            <p>No hay elementos disponibles.</p>
           ) : (
-            <div className="banner-list-container">
-              {banners.map((banner) => (
-                <div key={banner.id} className="banner-item">
-                  <img src={banner.photoURL} alt={banner.title} className="banner-thumbnail" />
-                  <p>{banner.title}</p>
-                  <button
-                    className="delete-button"
-                    onClick={() => handleDelete(banner.id, banner.photoURL)}
-                  >
-                    Eliminar
-                  </button>
-                </div>
-              ))}
-            </div>
+            items.map((item) => (
+              <div key={item.id} className="item">
+                <p>{item.title}</p>
+                <button onClick={() => handleDelete(item.id, item.photoURL)}>Eliminar</button>
+              </div>
+            ))
           )}
         </div>
       </div>
@@ -169,7 +227,6 @@ const BannerModal = ({ onClose }) => {
   );
 };
 
-// Define los tipos de las props
 BannerModal.propTypes = {
   onClose: PropTypes.func.isRequired,
 };
