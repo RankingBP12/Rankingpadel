@@ -1,77 +1,145 @@
 /* ModalClubes.css */
+
+/* Fondo del modal */
 .modal-clubes-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-  }
-  
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+/* Contenido del modal */
+.modal-clubes-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  position: relative;
+  z-index: 1010;
+  box-sizing: border-box; /* Asegura que el padding no afecte al tamaño total */
+}
+
+/* Título del modal */
+.modal-clubes-content h3 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  line-height: 1.2;
+}
+
+/* Párrafos dentro del modal */
+.modal-clubes-content p {
+  font-size: 1rem;
+  margin: 10px 0;
+  line-height: 1.5;
+}
+
+/* Enlaces dentro del modal */
+.modal-clubes-content a {
+  color: #007bff;
+  text-decoration: none;
+}
+
+.modal-clubes-content a:hover {
+  text-decoration: underline;
+}
+
+/* Logo dentro del modal */
+.modal-clubes-logo {
+  display: block;
+  margin: 20px auto;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Botón de cerrar */
+.modal-clubes-close {
+  background: #007bff;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 10px 20px;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.modal-clubes-close:hover {
+  background-color: #0056b3;
+}
+
+/* Media Queries para el modal */
+
+/* Móviles (menos de 600px) */
+@media (max-width: 599px) {
   .modal-clubes-content {
-    background: #fff;
-    border-radius: 8px;
-    padding: 20px;
-    width: 90%;
-    max-width: 500px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    position: relative;
-    z-index: 1010; /* Asegúrate de que el contenido del modal esté por encima del overlay */
+    width: 95%; /* Ajusta el tamaño a pantallas más pequeñas */
+    padding: 15px; /* Reduce el padding para ahorrar espacio */
   }
-  
+
   .modal-clubes-content h3 {
-    margin-top: 0;
-    font-size: 1.5rem;
+    font-size: 1.2rem; /* Reduce el tamaño del título en pantallas pequeñas */
   }
-  
+
+  .modal-clubes-content p {
+    font-size: 0.9rem; /* Ajusta el tamaño de la fuente del párrafo */
+  }
+
+  .modal-clubes-close {
+    font-size: 0.9rem; /* Reduce el tamaño del botón en móviles */
+    padding: 8px 16px; /* Reduce el padding del botón */
+  }
+}
+
+/* Pantallas medianas (entre 600px y 1023px) */
+@media (min-width: 600px) and (max-width: 1023px) {
+  .modal-clubes-content {
+    width: 80%; /* Reduce el ancho del modal */
+    padding: 20px;
+  }
+
+  .modal-clubes-content h3 {
+    font-size: 1.4rem; /* Ajusta el tamaño del título */
+  }
+
   .modal-clubes-content p {
     font-size: 1rem;
-    margin: 10px 0;
   }
-  
-  .modal-clubes-content a {
-    color: #007bff;
-    text-decoration: none;
-  }
-  
-  .modal-clubes-content a:hover {
-    text-decoration: underline;
-  }
-  
-  .modal-clubes-logo {
-    display: block;
-    margin: 20px auto;
-    max-width: 100%;
-    height: auto;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
+
   .modal-clubes-close {
-    background: #007bff;
-    color: #fff;
-    border: none;
-    border-radius: 5px;
     font-size: 1rem;
-    cursor: pointer;
     padding: 10px 20px;
-    position: absolute;
-    bottom: 10px;
-    right: 10px;
   }
-  
-  .modal-clubes-close:hover {
-    background-color: #0056b3;
+}
+
+/* Pantallas grandes (mayores de 1023px) */
+@media (min-width: 1024px) {
+  .modal-clubes-content {
+    width: 50%; /* Ajusta el tamaño del modal para pantallas grandes */
+    padding: 30px;
   }
-  
-  /* Media Queries para el modal */
-  @media (max-width: 599px) {
-    .modal-clubes-content {
-      width: 100%;
-    }
+
+  .modal-clubes-content h3 {
+    font-size: 1.6rem; /* Aumenta el tamaño del título */
   }
-  
+
+  .modal-clubes-content p {
+    font-size: 1rem;
+  }
+
+  .modal-clubes-close {
+    font-size: 1.1rem; /* Aumenta el tamaño del botón */
+    padding: 12px 24px; /* Ajusta el tamaño del botón */
+  }
+}

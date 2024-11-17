@@ -1,12 +1,30 @@
+import { useEffect } from 'react';
 import PropTypes from 'prop-types';
 import './ModalRanking.css'; // Archivo CSS para estilos
 
 const ModalRanking = ({ isOpen, onClose, participants }) => {
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleBack = () => {
+      onClose();
+      return false; // Bloquea la navegación hacia atrás
+    };
+
+    // Agrega una entrada al historial para capturar el evento "atrás"
+    window.history.pushState(null, '', window.location.href);
+    window.addEventListener('popstate', handleBack);
+
+    return () => {
+      window.removeEventListener('popstate', handleBack);
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null; // Si el modal no está abierto, no renderiza nada
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content">
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Ranking Completo</h2>
           <button className="close-btn" onClick={onClose}>Cerrar</button>
@@ -55,12 +73,12 @@ ModalRanking.propTypes = {
   onClose: PropTypes.func.isRequired,
   participants: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired, // Añadir id para identificar participantes
+      id: PropTypes.number.isRequired, 
       rank: PropTypes.number.isRequired,
       name: PropTypes.string.isRequired,
-      points: PropTypes.string.isRequired
+      points: PropTypes.string.isRequired,
     })
-  ).isRequired
+  ).isRequired,
 };
 
 export default ModalRanking;

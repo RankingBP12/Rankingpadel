@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ref as dbRef, get } from 'firebase/database';
 import { database } from '../../../../firebase.config';
-import { Link } from 'react-router-dom';
 import "./SliderPublicidad.css";
 
 const SliderPublicidad = () => {
@@ -17,15 +16,15 @@ const SliderPublicidad = () => {
         if (snapshot.exists()) {
           const data = snapshot.val();
           const containersList = [];
-          Object.keys(data).forEach(containerKey => {
-            const containerItems = Object.keys(data[containerKey]).map(itemKey => ({
+          Object.keys(data).forEach((containerKey) => {
+            const containerItems = Object.keys(data[containerKey]).map((itemKey) => ({
               id: itemKey,
               ...data[containerKey][itemKey],
             }));
             containersList.push({
               containerKey,
               containerItems,
-              currentImageIndex: 0,
+              currentImageIndex: 0,  // Mantén el índice por cada contenedor
             });
           });
           setContainers(containersList);
@@ -40,8 +39,8 @@ const SliderPublicidad = () => {
   }, []);
 
   const updateImageIndex = (containerKey) => {
-    setContainers(prevContainers =>
-      prevContainers.map(container => {
+    setContainers((prevContainers) =>
+      prevContainers.map((container) => {
         if (container.containerKey === containerKey) {
           const nextIndex = (container.currentImageIndex + 1) % container.containerItems.length;
           return { ...container, currentImageIndex: nextIndex };
@@ -55,7 +54,11 @@ const SliderPublicidad = () => {
     const sequenceInterval = setInterval(() => {
       const nextIndex = (currentContainerIndex + 1) % containers.length;
       setCurrentContainerIndex(nextIndex);
-      updateImageIndex(containers[nextIndex].containerKey);
+
+      // Actualizamos el índice de la imagen para el contenedor actual
+      if (containers[nextIndex]?.containerItems?.length > 1) {
+        updateImageIndex(containers[nextIndex].containerKey);
+      }
     }, 1500);
 
     return () => clearInterval(sequenceInterval);
@@ -65,22 +68,20 @@ const SliderPublicidad = () => {
     <div className="slider-container">
       {containers.length > 0 ? (
         <div className="slider">
-          {containers.slice(0, 3).map((container) => (
+          {containers.map((container) => (
             <div key={container.containerKey} className="container-item">
-              {container.containerItems.length > 1 ? (
-                <ImageSlider
-                  containerKey={container.containerKey}
-                  images={container.containerItems}
-                  currentImageIndex={container.currentImageIndex}
-                  updateImageIndex={() => updateImageIndex(container.containerKey)}
-                />
-              ) : (
-                container.containerItems.map((item, index) => (
-                  <ImageWithLink
-                    key={item.id}
-                    image={item}
+              {container.containerItems.length > 0 ? (
+                container.containerItems.length === 1 ? (
+                  <ImageWithLink image={container.containerItems[0]} />
+                ) : (
+                  <ImageSlider
+                    containerKey={container.containerKey}
+                    images={container.containerItems}
+                    currentImageIndex={container.currentImageIndex}
                   />
-                ))
+                )
+              ) : (
+                <p>No hay imágenes disponibles</p>
               )}
             </div>
           ))}
@@ -92,46 +93,41 @@ const SliderPublicidad = () => {
   );
 };
 
-const ImageWithLink = ({ image }) => {
-  return (
-    <a
-      href={image.link || '#'}
-      target={image.link ? '_blank' : ''}
-      rel="noopener noreferrer"
-    >
+// Modificado: eliminamos la decodificación de URL
+const ImageWithLink = ({ image }) => (
+  <a
+    href={image.link || '#'}
+    target={image.link ? '_blank' : ''}
+    rel="noopener noreferrer"
+  >
+    {image.photoURL ? (
       <img
-        src={image.photoURL || 'https://via.placeholder.com/250'}
-        alt={image.title}
+        src={image.photoURL}  // Usamos la URL directamente sin decodificar
+        alt={image.title || 'Imagen no disponible'}
         style={{ width: '250px', height: '250px', objectFit: 'cover' }}
-        onError={(e) => {
-          e.target.onerror = null;
-          e.target.src = 'https://via.placeholder.com/250';
-        }}
       />
-    </a>
-  );
-};
+    ) : null}
+  </a>
+);
 
-const ImageSlider = ({ containerKey, images, currentImageIndex, updateImageIndex }) => {
+const ImageSlider = ({ containerKey, images, currentImageIndex }) => {
+  const currentImage = images[currentImageIndex];
   return (
     <div className="container-item">
-      {images.map((image, index) => (
-        <div key={index}>
-          {/* Enlace específico para cada imagen */}
-          <Link to={image.link || '#'} target={image.link ? '_blank' : ''} rel="noopener noreferrer">
-            <img
-              src={image.photoURL || 'https://via.placeholder.com/250'}
-              alt={image.title}
-              className={index === currentImageIndex ? 'show' : 'fade'}
-              style={{ objectFit: 'cover' }}
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = 'https://via.placeholder.com/250';
-              }}
-            />
-          </Link>
-        </div>
-      ))}
+      <a
+        href={currentImage.link || '#'}
+        target={currentImage.link ? '_blank' : ''}
+        rel="noopener noreferrer"
+      >
+        {currentImage.photoURL ? (
+          <img
+            src={currentImage.photoURL}  // Usamos la URL directamente sin decodificar
+            alt={currentImage.title || 'Imagen no disponible'}
+            className="show"
+            style={{ objectFit: 'cover' }}
+          />
+        ) : null}
+      </a>
     </div>
   );
 };

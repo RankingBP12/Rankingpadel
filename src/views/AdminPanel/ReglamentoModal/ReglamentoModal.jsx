@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { ref as dbRef, set, get, query, limitToLast } from 'firebase/database';
@@ -28,8 +28,28 @@ const ReglamentoModal = ({ onClose }) => {
   };
 
   // Se ejecuta al montar el componente
-  useState(() => {
+  useEffect(() => {
     fetchLastReglamentoKey();
+
+    // Agregar un estado al historial del navegador
+    window.history.pushState({ modalOpen: true }, '');
+
+    // Manejar el evento de retroceso
+    const handlePopState = (event) => {
+      if (event.state && event.state.modalOpen) {
+        onClose();
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+
+    return () => {
+      // Limpiar el estado y el evento al desmontar
+      window.removeEventListener('popstate', handlePopState);
+      if (window.history.state?.modalOpen) {
+        window.history.back();
+      }
+    };
   }, []);
 
   const handleFileChange = (e) => {

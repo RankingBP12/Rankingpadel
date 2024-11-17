@@ -1,3 +1,4 @@
+import React, { Suspense, lazy } from 'react';
 import Header from '../../components/header/Header';
 import BannerP from './BannerP/BannerP';
 import CardsTorneos from './CardsTorneos/CardsTorneos';
@@ -6,12 +7,16 @@ import LogosDeCanchas from './LogosDeCanchas/LogosDeCanchas';
 import RankingSlide from './Ranking/Ranking';
 import SliderPublicidad from './SliderPublicidad/SliderPublicidad';
 import WhatsAppButton from './WhatsAppButton/WhatsAppButton';
-import PopupInicio from './PopupInicio/PopupInicio';
+
+// Lazy load del PopupInicio
+const PopupInicio = lazy(() => import('./PopupInicio/PopupInicio'));
 
 const Inicio = () => {
   return (
     <div>
-      <PopupInicio /> 
+      <Suspense fallback={<div>Loading popup...</div>}>
+        <PopupInicio />
+      </Suspense>
       <Header />
       <BannerP />
       <section id='canchas'>
@@ -20,7 +25,6 @@ const Inicio = () => {
       <section id='torneos'>
         <CardsTorneos />
       </section>
-
       <section>
         <SliderPublicidad />
       </section>
@@ -43,3 +47,4 @@ const Inicio = () => {
 };
 
 export default Inicio;
+

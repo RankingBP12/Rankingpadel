@@ -6,6 +6,7 @@ import './ReglamentoModal.css';
 const ReglamentoModal = ({ isOpen, closeModal }) => {
   const [pdfUrl, setPdfUrl] = useState(null); // Estado para almacenar la URL del PDF
 
+  // Efecto para manejar la apertura y cierre del modal
   useEffect(() => {
     // Función para obtener la URL del reglamento desde Firebase Database
     const fetchPdfUrl = async () => {
@@ -29,12 +30,34 @@ const ReglamentoModal = ({ isOpen, closeModal }) => {
     if (isOpen) {
       fetchPdfUrl();
     }
-  }, [isOpen]);
+
+    // Cerrar el modal con la tecla 'Escape'
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') {
+        closeModal(); // Cerrar el modal
+      }
+    };
+
+    // Agregar el evento de la tecla Escape
+    window.addEventListener('keydown', handleEscape);
+
+    // Limpiar el evento de la tecla Escape cuando el componente se desmonte
+    return () => {
+      window.removeEventListener('keydown', handleEscape);
+    };
+  }, [isOpen, closeModal]);
+
+  // Cerrar el modal cuando se haga clic fuera del contenedor
+  const handleOverlayClick = (e) => {
+    if (e.target === e.currentTarget) {
+      closeModal(); // Cerrar el modal si se hace clic en el fondo (overlay)
+    }
+  };
 
   if (!isOpen) return null; // Si el modal no está abierto, no renderiza nada
 
   return (
-    <div className="modal-overlay">
+    <div className="modal-overlay" onClick={handleOverlayClick}>
       <div className="modal-content">
         <h2>Reglamento</h2>
         {pdfUrl ? (

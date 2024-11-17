@@ -1,39 +1,94 @@
+/* Estilos generales para el popup */
 .popup-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-  }
-  
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%; /* Asegura que cubra toda la pantalla */
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow: hidden; /* Previene el desplazamiento del body cuando el popup está abierto */
+  margin: 0; /* Elimina cualquier margen que podría causar un desbordamiento */
+}
+
+.popup-content {
+  position: relative;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  text-align: center;
+  max-width: 600px; /* Máximo tamaño para escritorio */
+  width: 90%; /* Ancho adaptable */
+  box-sizing: border-box; /* Asegura que el padding se incluya en el tamaño total */
+  overflow: hidden; /* Evita el desbordamiento dentro del popup */
+  margin: 0; /* Elimina cualquier margen que pueda generar desplazamiento horizontal */
+}
+
+/* Imagen del popup */
+.popup-image {
+  max-width: 100%;
+  max-height: 400px;
+  object-fit: cover;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background-color: transparent;
+  font-size: 20px;
+  cursor: pointer;
+  color: red;
+}
+
+/* Media query para móviles (pantallas pequeñas) */
+@media (max-width: 480px) {
   .popup-content {
-    position: relative;
-    background-color: white;
-    padding: 20px;
-    border-radius: 8px;
-    text-align: center;
-    max-width: 600px;
+    padding: 15px;
+    width: 90%; /* Asegura que el popup no sobresalga en pantallas pequeñas */
   }
-  
+
   .popup-image {
-    max-width: 100%;
-    max-height: 400px;
-    object-fit: cover;
+    max-height: 250px; /* Reducimos el tamaño de la imagen en pantallas pequeñas */
   }
-  
+
   .close-btn {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    border: none;
-    background-color: transparent;
-    font-size: 20px;
-    cursor: pointer;
-    color: red;
+    top: 5px;
+    right: 5px;
+    font-size: 18px; /* Reducimos el tamaño del botón de cierre */
   }
-  
+}
+
+/* Media query para tabletas (pantallas medianas) */
+@media (max-width: 768px) {
+  .popup-content {
+    padding: 18px;
+    width: 80%; /* Ancho ajustado para tablets */
+  }
+
+  .popup-image {
+    max-height: 300px; /* Ajustamos el tamaño de la imagen */
+  }
+
+  .close-btn {
+    top: 8px;
+    right: 8px;
+    font-size: 18px;
+  }
+}
+
+/* Media query para escritorios (pantallas grandes) */
+@media (min-width: 1024px) {
+  .popup-content {
+    padding: 30px;
+    width: 50%; /* Ajustamos el ancho para pantallas más grandes */
+  }
+
+  .popup-image {
+    max-height: 400px; /* Mantiene el tamaño original de la imagen */
+  }
+}

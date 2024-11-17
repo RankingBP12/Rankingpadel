@@ -1,37 +1,42 @@
 /* Contenedor principal para los rankings */
 .rankings-container {
-    display: flex;
-    flex-direction: column; /* Predeterminado: en columna para móviles */
-    gap: 2rem; /* Espacio entre los dos rankings */
+  display: flex;
+  flex-direction: column; /* Predeterminado: en columna para móviles */
+  gap: 2rem; /* Espacio entre los dos rankings */
+  width: 100%; /* Asegura que el contenedor ocupe el 100% del ancho disponible */
+  box-sizing: border-box; /* Para evitar que los bordes y el padding afecten el ancho */
+  overflow-x: hidden; /* Evitar el desbordamiento horizontal */
+}
+
+/* Estilos específicos para pantallas grandes (escritorio) */
+@media (min-width: 768px) {
+  .rankings-container {
+    flex-direction: row; /* Cambia a fila en pantallas grandes */
   }
-  
-  /* Estilos específicos para pantallas grandes (escritorio) */
-  @media (min-width: 768px) {
-    .rankings-container {
-      flex-direction: row; /* Cambia a fila en pantallas grandes */
-    }
-  }
-  
-  /* Estilo para cada ranking */
-  .ranking-container {
-    flex: 1; /* Hace que ambos componentes ocupen el mismo espacio disponible */
-  }
-  /* Tamaño de fuente para rankings en dispositivos móviles */
+}
+
+/* Estilo para cada ranking */
+.ranking-container {
+  flex: 1; /* Hace que ambos componentes ocupen el mismo espacio disponible */
+  padding: 1rem; /* Espaciado interior para asegurar que los contenidos no se toquen */
+  box-sizing: border-box; /* Incluye el padding y border en el cálculo del tamaño total */
+}
+
+/* Tamaño de fuente para rankings en dispositivos móviles */
 @media (max-width: 740px) {
-    .ranking-container * {
-      font-size: 70%;
-    }
+  .ranking-container * {
+    font-size: 70%; /* Ajuste para pantallas medianas */
   }
-  
-  @media (max-width: 500px) {
-    .ranking-container * {
-      font-size: 55%;
-    }
+}
+
+@media (max-width: 500px) {
+  .ranking-container * {
+    font-size: 55%; /* Ajuste para pantallas pequeñas */
   }
-  
-  @media (max-width: 390px) {
-    .ranking-container * {
-      font-size: 45%;
-    }
+}
+
+@media (max-width: 390px) {
+  .ranking-container * {
+    font-size: 45%; /* Ajuste para pantallas extra pequeñas */
   }
-  
+}

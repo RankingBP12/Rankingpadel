@@ -1,9 +1,26 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import './ModalGenreJugadores.css';
 
 const ModalGenreJugadores = ({ jugadores, onClose, genero }) => {
   const [activeTab, setActiveTab] = useState('conPuntos');
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const handleBack = () => {
+      onClose();
+      return false; // Bloquea la navegación hacia atrás
+    };
+
+    // Escucha el evento de navegación
+    window.history.pushState(null, '', window.location.href);
+    window.addEventListener('popstate', handleBack);
+
+    return () => {
+      window.removeEventListener('popstate', handleBack);
+    };
+  }, [onClose]);
 
   // Filtrar y ordenar jugadores
   const jugadoresConPuntos = jugadores.filter(j => j.points > 0).sort((a, b) => b.points - a.points);
@@ -12,6 +29,7 @@ const ModalGenreJugadores = ({ jugadores, onClose, genero }) => {
   const handleOutsideClick = (e) => {
     if (e.target.className.includes('modal-gnr')) {
       onClose();
+      navigate(-1); // Regresa en el historial
     }
   };
 

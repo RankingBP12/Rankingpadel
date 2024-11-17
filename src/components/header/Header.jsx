@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation } from 'react-router-dom';
 import ReglamentoModal from './ReglamentoModal/ReglamentoModal';
 import './Header.css';
@@ -6,13 +6,14 @@ import Logo from '../../assets/Header/logo.png';
 
 const Header = () => {
   const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const menuRef = useRef(null); // Usamos una referencia para el menú
   const location = useLocation();
 
-  // Rutas donde quieres ocultar el Header
   const hiddenRoutes = ['/admin'];
 
-  // Si la ruta actual está en las ocultas, no renderizar el Header
-  if (hiddenRoutes.includes(location.pathname)) {
+  // Evitar que se ejecute el código si location.pathname aún no está disponible
+  if (!location.pathname || hiddenRoutes.includes(location.pathname)) {
     return null;
   }
 
@@ -25,12 +26,38 @@ const Header = () => {
   };
 
   const scrollToSection = (event, sectionId) => {
-    event.preventDefault(); // Evita el comportamiento por defecto del enlace
+    event.preventDefault();
     const section = document.getElementById(sectionId);
     if (section) {
-      section.scrollIntoView({ behavior: 'smooth' }); // Desplazamiento suave
+      section.scrollIntoView({ behavior: 'smooth' });
     }
   };
+
+  const toggleMenu = (event) => {
+    // Prevenir que el clic en el botón de la hamburguesa cierre el menú
+    event.stopPropagation();
+    setMenuOpen(!menuOpen);
+  };
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
+  // Detectar clics fuera del menú
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      // Si el clic es fuera del menú y el menú está abierto, cerramos el menú
+      if (menuRef.current && !menuRef.current.contains(event.target) && menuOpen) {
+        closeMenu();
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('click', handleClickOutside);
+    };
+  }, [menuOpen]);
 
   return (
     <header className="header">
@@ -38,12 +65,45 @@ const Header = () => {
         <img src={Logo} alt="Logo" className="logo-img" />
         <span className="neon-text">RANKING PADEL</span>
       </div>
-      <nav className="nav">
-        <button onClick={(e) => scrollToSection(e, 'canchas')} className="nav-button">Canchas</button>
-        <button onClick={(e) => scrollToSection(e, 'torneos')} className="nav-button">Torneos</button>
-        <button onClick={(e) => scrollToSection(e, 'jugadores')} className="nav-button">Jugadores</button>
-        <button onClick={(e) => scrollToSection(e, 'ranking')} className="nav-button">Ranking</button>
-        <button onClick={openModal} className="nav-button">Reglamento</button>
+      <button
+        className={`hamburger-menu ${menuOpen ? 'open' : ''}`}
+        onClick={toggleMenu} // Usamos `toggleMenu` para prevenir propagación
+      >
+        <div className="bar"></div>
+        <div className="bar"></div>
+        <div className="bar"></div>
+      </button>
+      <nav ref={menuRef} className={`nav ${menuOpen ? 'open' : ''}`}>
+        <button
+          onClick={(e) => { scrollToSection(e, 'canchas'); closeMenu(); }}
+          className="nav-button"
+        >
+          Canchas
+        </button>
+        <button
+          onClick={(e) => { scrollToSection(e, 'torneos'); closeMenu(); }}
+          className="nav-button"
+        >
+          Torneos
+        </button>
+        <button
+          onClick={(e) => { scrollToSection(e, 'jugadores'); closeMenu(); }}
+          className="nav-button"
+        >
+          Jugadores
+        </button>
+        <button
+          onClick={(e) => { scrollToSection(e, 'ranking'); closeMenu(); }}
+          className="nav-button"
+        >
+          Ranking
+        </button>
+        <button
+          onClick={() => { openModal(); closeMenu(); }}
+          className="nav-button"
+        >
+          Reglamento
+        </button>
       </nav>
       <ReglamentoModal isOpen={modalIsOpen} closeModal={closeModal} />
     </header>

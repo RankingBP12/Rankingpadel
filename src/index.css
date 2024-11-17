@@ -13,34 +13,64 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
-
 a {
   font-weight: 500;
   color: #646cff;
   text-decoration: inherit;
 }
+
 a:hover {
   color: #535bf2;
 }
 
+html,
 body {
   margin: 0;
-  place-items: center;
-
+  padding: 0;
+  width: 100%;
+  height: 100%; 
+  overflow-x: hidden;
 }
 
 html {
   scroll-behavior: smooth;
+  font-size: 14px;
 }
 
-
-
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
 }
 
+@media (max-width: 480px) { /* Ajuste para dispositivos con pantallas pequeñas */
+  body {
+    font-size: 14px; /* Ajuste del tamaño de fuente */
+    width: 100vw; /* Asegura que el body ocupe todo el ancho de la pantalla */
+    height: auto; /* Ajusta la altura */
+  }
+
+  .container, .content, .slider, .banner-slider { /* Aplica a los contenedores principales */
+    width: 100vw; /* Asegura que estos contenedores no excedan el ancho de la pantalla */
+    box-sizing: border-box; /* Incluir el padding y border en el tamaño total */
+  }
+
+  h1 {
+    font-size: 2.8em; /* Ajustar tamaño de título */
+  }
+
+  .banner-slide-image {
+    width: 100%; /* Imagen ajustada al ancho de la pantalla */
+    height: auto;
+    object-fit: contain;
+  }
+}
 
 
 @media (prefers-color-scheme: light) {

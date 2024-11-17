@@ -173,8 +173,8 @@ const RankingMasculino = () => {
 
 const Ranking = () => (
   <div className="ranking-container">
-    <RankingFemenino />
     <RankingMasculino />
+    <RankingFemenino />
   </div>
 );
 
