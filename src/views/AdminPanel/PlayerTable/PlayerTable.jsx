@@ -85,48 +85,57 @@ const PlayerTable = () => {
     setEditPlayer({ ...player });
   };
 
-  const handleSaveClick = () => {
-    if (editPlayer) {
-      const playerRef = ref(database, `jugadores/${editPlayer.id}`);
+  // Agrega el campo tournamentsPlayed al guardar o editar
+const handleSaveClick = () => {
+  if (editPlayer) {
+    const playerRef = ref(database, `jugadores/${editPlayer.id}`);
+    
+    if (newPhotoFile) {
+      const photoRef = storageRef(storage, `jugadores/${editPlayer.id}/photo.jpg`);
       
-      if (newPhotoFile) {
-        const photoRef = storageRef(storage, `jugadores/${editPlayer.id}/photo.jpg`);
-        
-        uploadBytes(photoRef, newPhotoFile)
-          .then(snapshot => getDownloadURL(snapshot.ref))
-          .then(url => {
-            editPlayer.photoURL = url;
-            return updatePlayerData(playerRef, editPlayer);
-          })
-          .catch(error => {
-            console.error("Error uploading photo: ", error);
-            setError('Error al subir la foto.');
-          });
-      } else {
-        updatePlayerData(playerRef, editPlayer);
-      }
+      uploadBytes(photoRef, newPhotoFile)
+        .then(snapshot => getDownloadURL(snapshot.ref))
+        .then(url => {
+          editPlayer.photoURL = url;
+          return updatePlayerData(playerRef, editPlayer);
+        })
+        .catch(error => {
+          console.error("Error uploading photo: ", error);
+          setError('Error al subir la foto.');
+        });
+    } else {
+      updatePlayerData(playerRef, editPlayer);
     }
+  }
+};
+
+const updatePlayerData = (playerRef, updatedPlayer) => {
+  const playerDataToUpdate = {
+    ...updatedPlayer,
+    tournamentsPlayed: updatedPlayer.tournamentsPlayed ?? 0,
   };
 
-  const updatePlayerData = (playerRef, updatedPlayer) => {
-    const playerDataToUpdate = { ...updatedPlayer };
-    if (!newPhotoFile) {
-      delete playerDataToUpdate.photoURL; 
-    }
-    update(playerRef, playerDataToUpdate)
-      .then(() => {
-        const updatedPlayers = { ...jugadores };
-        updatedPlayers[updatedPlayer.id] = { ...updatedPlayer };
-        updateJugadores(updatedPlayers);
-        setEditPlayer(null);
-        setNewPhotoFile(null);
-        filterPlayers(selectedGender, searchTerm, pointsFilter);
-      })
-      .catch(error => {
-        console.error("Error updating player: ", error);
-        setError('Error al guardar los cambios.');
-      });
-  };
+  if (!newPhotoFile) {
+    delete playerDataToUpdate.photoURL;
+  }
+
+  update(playerRef, playerDataToUpdate)
+    .then(() => {
+      const updatedPlayers = { ...jugadores };
+      updatedPlayers[updatedPlayer.id] = playerDataToUpdate;
+
+      updateJugadores(updatedPlayers);
+      setEditPlayer(null);
+      setNewPhotoFile(null);
+      filterPlayers(selectedGender, searchTerm, pointsFilter);
+    })
+    .catch((error) => {
+      console.error("Error updating player: ", error);
+      setError("Error al guardar los cambios.");
+    });
+};
+
+
 
   const handleDeleteClick = (id) => {
     setPlayerToDeleteId(id);
@@ -274,85 +283,114 @@ const PlayerTable = () => {
               <th>Género</th>
               <th>Categoría</th>
               <th>Puntos</th>
+              <th>Torneos Jugados</th>
               <th>Acciones</th>
             </tr>
           </thead>
           <tbody>
-            {filteredPlayers.map((player) => (
-              <tr key={player.id}>
-                <td>
-                  <img
-                    src={player.photoURL || GenericPhoto}
-                    alt={player.name}
-                    className="player-photo"
-                  />
-                </td>
-                <td>
-                  {editPlayer && editPlayer.id === player.id ? (
-                    <input
-                      type="text"
-                      name="name"
-                      value={editPlayer.name}
-                      onChange={handleEditChange}
-                    />
-                  ) : (
-                    player.name
-                  )}
-                </td>
-                <td>
-                  {editPlayer && editPlayer.id === player.id ? (
-                    <input
-                      type="text"
-                      name="gender"
-                      value={editPlayer.gender}
-                      onChange={handleEditChange}
-                    />
-                  ) : (
-                    player.gender
-                  )}
-                </td>
-                <td>
-                  {editPlayer && editPlayer.id === player.id ? (
-                    <input
-                      type="text"
-                      name="category"
-                      value={editPlayer.category || ''}
-                      onChange={handleEditChange}
-                    />
-                  ) : (
-                    player.category || ''
-                  )}
-                </td>
-                <td>
-                  {editPlayer && editPlayer.id === player.id ? (
-                    <input
-                      type="number"
-                      name="points"
-                      value={editPlayer.points}
-                      onChange={handleEditChange}
-                    />
-                  ) : (
-                    player.points
-                  )}
-                </td>
-                <td>
-                  {editPlayer && editPlayer.id === player.id ? (
-                    <>
-                      <button onClick={handleSaveClick}><FaSave /> Guardar</button>
-                      <button onClick={handleCancelEdit}><FaTimes /> Cancelar</button>
-                    </>
-                  ) : (
-                    <>
-                      <button onClick={() => handleEditClick(player)}><FaEdit /> Editar</button>
-                      <button onClick={() => handleDeleteClick(player.id)} disabled={isLoading && playerToDeleteId === player.id}>
-                        {isLoading && playerToDeleteId === player.id ? 'Eliminando...' : <><FaTrash /> Eliminar</>}
-                      </button>
-                    </>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
+  {filteredPlayers.map((player) => (
+    <tr key={player.id}>
+      <td>
+        <img
+          src={player.photoURL || GenericPhoto}
+          alt={player.name}
+          className="player-photo"
+        />
+      </td>
+      <td>
+        {editPlayer && editPlayer.id === player.id ? (
+          <input
+            type="text"
+            name="name"
+            value={editPlayer.name}
+            onChange={handleEditChange}
+          />
+        ) : (
+          player.name
+        )}
+      </td>
+      <td>
+        {editPlayer && editPlayer.id === player.id ? (
+          <input
+            type="text"
+            name="gender"
+            value={editPlayer.gender}
+            onChange={handleEditChange}
+          />
+        ) : (
+          player.gender
+        )}
+      </td>
+      <td>
+        {editPlayer && editPlayer.id === player.id ? (
+          <input
+            type="text"
+            name="category"
+            value={editPlayer.category || ''}
+            onChange={handleEditChange}
+          />
+        ) : (
+          player.category || ''
+        )}
+      </td>
+      <td>
+        {editPlayer && editPlayer.id === player.id ? (
+          <input
+            type="number"
+            name="points"
+            value={editPlayer.points}
+            onChange={handleEditChange}
+          />
+        ) : (
+          player.points
+        )}
+      </td>
+      <td>
+        {editPlayer && editPlayer.id === player.id ? (
+          <input
+            type="number"
+            name="tournamentsPlayed"
+            value={editPlayer.tournamentsPlayed}
+            onChange={handleEditChange}
+          />
+        ) : (
+          player.tournamentsPlayed || 0
+        )}
+      </td>
+      <td>
+        {editPlayer && editPlayer.id === player.id ? (
+          <>
+            <button onClick={handleSaveClick}>
+              <FaSave /> Guardar
+            </button>
+            <button onClick={handleCancelEdit}>
+              <FaTimes /> Cancelar
+            </button>
+          </>
+        ) : (
+          <>
+            <button onClick={() => handleEditClick(player)}>
+              <FaEdit /> Editar
+            </button>
+            <button
+              onClick={() => handleDeleteClick(player.id)}
+              disabled={isLoading && playerToDeleteId === player.id}
+            >
+              {isLoading && playerToDeleteId === player.id
+                ? 'Eliminando...'
+                : (
+                  <>
+                    <FaTrash /> Eliminar
+                  </>
+                )}
+            </button>
+          </>
+        )}
+      </td>
+    </tr>
+  ))}
+</tbody>
+
         </table>
       </div>
     </div>
